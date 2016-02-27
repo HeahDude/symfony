@@ -78,11 +78,13 @@ class CollectionType extends AbstractType
             return $entryOptions;
         };
 
-        $prototypeOptions = function (Options $options) {
+        $prototypeOptionsNormalizer = function (Options $options, $prototypeOptions) {
             // Default to 'entry_options' option
-            $prototypeOptions = $options['entry_options'];
+            $prototypeOptions = array_replace($options['entry_options'], $prototypeOptions);
 
             if (null !== $options['prototype_data']) {
+                @trigger_error('The "prototype_data" option is deprecated since version 3.1 and will be removed in 4.0. You should use "prototype_options" option instead.', E_USER_DEPRECATED);
+
                 // Let 'prototype_data' option override `$entryOptions['data']` for BC
                 $prototypeOptions['data'] = $options['prototype_data'];
             }
@@ -98,20 +100,22 @@ class CollectionType extends AbstractType
             'entry_type' => __NAMESPACE__.'\TextType',
             'entry_options' => array(),
             'prototype' => true,
-            'prototype_data' => null,
+            'prototype_data' => null, // deprecated
             'prototype_name' => '__name__',
-            'prototype_options' => $prototypeOptions, // internal
+            'prototype_options' => array(),
             'allow_add' => false,
             'allow_delete' => false,
             'delete_empty' => false,
         ));
 
         $resolver->setNormalizer('entry_options', $entryOptionsNormalizer);
+        $resolver->setNormalizer('prototype_options', $prototypeOptionsNormalizer);
 
         $resolver->setAllowedTypes('entry_type', array('string', 'Symfony\Component\Form\FormTypeInterface'));
         $resolver->setAllowedTypes('entry_options', 'array');
         $resolver->setAllowedTypes('prototype', 'bool');
         $resolver->setAllowedTypes('prototype_name', 'string');
+        $resolver->setAllowedTypes('prototype_options', 'array');
         $resolver->setAllowedTypes('allow_add', 'bool');
         $resolver->setAllowedTypes('allow_delete', 'bool');
         $resolver->setAllowedTypes('delete_empty', 'bool');
