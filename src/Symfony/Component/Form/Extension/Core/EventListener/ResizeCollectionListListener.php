@@ -11,70 +11,69 @@
 
 namespace Symfony\Component\Form\Extension\Core\EventListener;
 
-use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\CollectionList\CollectionListInterFace;
+use Symfony\Component\Form\CollectionList\Loader\CollectionLoaderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Resize a collection form element based on the data sent from the client.
+ * Dynamically resize a collection form element based on the data sent from the client and form config.
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
+ * @author Jules Pietri <jules@heahprod.com>
  */
-class ResizeFormListener implements EventSubscriberInterface
+class ResizeCollectionListListener extends ResizeFormListener implements EventSubscriberInterface
 {
     /**
-     * @var string
+     * @var string|\Closure The internal value for dynamic "name"
+     *                      of the sub from type,  also used as
+     *                      the default label
      */
-    protected $type;
+    protected $index;
 
     /**
-     * A callable get passed each entry as only argument.
-     *
-     * @var array|callable
+     * @var array|\Closure
      */
     protected $options;
 
     /**
-     * Whether children could be added to the group.
+     * @var string|string[]
+     */
+    protected $type_map;
+
+    /**
+     * Optimize collection using parent when true.
      *
      * @var bool
      */
-    protected $allowAdd;
+    private $static = false;
 
     /**
-     * Whether children could be removed from the group.
-     *
-     * @var bool
+     * @var CollectionListInterface
      */
-    protected $allowDelete;
+    private $collectionList;
 
-    /**
-     * @var bool
-     */
-    protected $deleteEmpty;
-
-    public function __construct($type, $options = array(), $allowAdd = false, $allowDelete = false, $deleteEmpty = false)
+    public function __construct(CollectionListInterFace $collection, $type_map, $index = null, array $options = array(), $allowAdd = false, $allowDelete = false, $deleteEmpty = false)
     {
-        $this->type = $type;
-        $this->options = $options;
-        $this->allowAdd = $allowAdd;
-        $this->allowDelete = $allowDelete;
-        $this->deleteEmpty = $deleteEmpty;
-    }
+        // Keeps high performance and BC performing a "static" resize
+        // all method calls will be done by the parent.
+        if (is_string($type_map) && null === $index && is_array($options)) {
+            $this->static = true;
+        } else {
+            $this->index = $index;
+            $this->type_map = $type_map;
+        }
 
-    public static function getSubscribedEvents()
-    {
-        return array(
-            FormEvents::PRE_SET_DATA => 'preSetData',
-            FormEvents::PRE_SUBMIT => 'preSubmit',
-            // (MergeCollectionListener, MergeDoctrineCollectionListener)
-            FormEvents::SUBMIT => array('onSubmit', 50),
-        );
+        parent::__construct(null, $options, $allowAdd, $allowDelete, $deleteEmpty);
     }
 
     public function preSetData(FormEvent $event)
     {
+        if ($this->static) {
+            return parent::preSetData($event);
+        }
+
         $form = $event->getForm();
         $data = $event->getData();
 
@@ -91,17 +90,22 @@ class ResizeFormListener implements EventSubscriberInterface
             $form->remove($name);
         }
 
-        // Then add all rows again in the correct order
-        foreach ($data as $name => $value) {
+        $collection = $this->createCollectionList($data);
 
+        // Then add all rows again in the correct order
+        foreach ($collection as $name => $value) {
             $form->add($name, $this->type, array_replace(array(
                 'property_path' => '['.$name.']',
-            ), $this->getOptionsForEntry($value)));
+            ), $this->options));
         }
     }
 
     public function preSubmit(FormEvent $event)
     {
+        if ($this->static) {
+            return parent::preSubmit($event);
+        }
+
         $form = $event->getForm();
         $data = $event->getData();
 
@@ -112,7 +116,6 @@ class ResizeFormListener implements EventSubscriberInterface
         if (!is_array($data) && !($data instanceof \Traversable && $data instanceof \ArrayAccess)) {
             $data = array();
         }
-
         // Remove all empty rows
         if ($this->allowDelete) {
             foreach ($form as $name => $child) {
@@ -128,7 +131,7 @@ class ResizeFormListener implements EventSubscriberInterface
                 if (!$form->has($name)) {
                     $form->add($name, $this->type, array_replace(array(
                         'property_path' => '['.$name.']',
-                    ), $this->getOptionsForEntry($value)));
+                    ), $this->options));
                 }
             }
         }
@@ -136,6 +139,10 @@ class ResizeFormListener implements EventSubscriberInterface
 
     public function onSubmit(FormEvent $event)
     {
+        if ($this->static) {
+            return parent::onSubmit($event);
+        }
+
         $form = $event->getForm();
         $data = $event->getData();
 
@@ -184,15 +191,8 @@ class ResizeFormListener implements EventSubscriberInterface
         $event->setData($data);
     }
 
-    /**
-     * If options are dynamic pass the item value to the callable.
-     *
-     * @param mixed $value Data value of a collection item
-     *
-     * @return array The options
-     */
-    private function getOptionsForEntry($value)
+    private function createCollectionList($data)
     {
-        return is_callable($this->options) ? call_user_func($this->options, $value) : $this->options;
+        return $data;
     }
 }

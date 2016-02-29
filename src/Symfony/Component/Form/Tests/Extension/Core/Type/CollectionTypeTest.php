@@ -18,6 +18,18 @@ class CollectionTypeTest extends \Symfony\Component\Form\Test\TypeTestCase
     public function testContainsNoChildByDefault()
     {
         $form = $this->factory->create('Symfony\Component\Form\Extension\Core\Type\CollectionType', null, array(
+            'entry_type_map' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
+        ));
+
+        $this->assertCount(0, $form);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testLegacyContainsNoChildByDefault()
+    {
+        $form = $this->factory->create('Symfony\Component\Form\Extension\Core\Type\CollectionType', null, array(
             'entry_type' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
         ));
 
@@ -25,6 +37,38 @@ class CollectionTypeTest extends \Symfony\Component\Form\Test\TypeTestCase
     }
 
     public function testSetDataAdjustsSize()
+    {
+        $form = $this->factory->create('Symfony\Component\Form\Extension\Core\Type\CollectionType', null, array(
+            'entry_type_map' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
+            'entry_options' => array(
+                'attr' => array('maxlength' => 20),
+            ),
+        ));
+        $form->setData(array('foo@foo.com', 'foo@bar.com'));
+
+        $this->assertInstanceOf('Symfony\Component\Form\Form', $form[0]);
+        $this->assertInstanceOf('Symfony\Component\Form\Form', $form[1]);
+        $this->assertCount(2, $form);
+        $this->assertEquals('foo@foo.com', $form[0]->getData());
+        $this->assertEquals('foo@bar.com', $form[1]->getData());
+        $formAttrs0 = $form[0]->getConfig()->getOption('attr');
+        $formAttrs1 = $form[1]->getConfig()->getOption('attr');
+        $this->assertEquals(20, $formAttrs0['maxlength']);
+        $this->assertEquals(20, $formAttrs1['maxlength']);
+
+        $form->setData(array('foo@baz.com'));
+        $this->assertInstanceOf('Symfony\Component\Form\Form', $form[0]);
+        $this->assertFalse(isset($form[1]));
+        $this->assertCount(1, $form);
+        $this->assertEquals('foo@baz.com', $form[0]->getData());
+        $formAttrs0 = $form[0]->getConfig()->getOption('attr');
+        $this->assertEquals(20, $formAttrs0['maxlength']);
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testLegacySetDataAdjustsSize()
     {
         $form = $this->factory->create('Symfony\Component\Form\Extension\Core\Type\CollectionType', null, array(
             'entry_type' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
@@ -140,6 +184,9 @@ class CollectionTypeTest extends \Symfony\Component\Form\Test\TypeTestCase
         $this->assertEquals('', $form[0]->getData());
     }
 
+    /**
+     * @group legacy
+     */
     public function testResizedDownIfSubmittedWithCompoundEmptyDataAndDeleteEmpty()
     {
         $form = $this->factory->create('Symfony\Component\Form\Extension\Core\Type\CollectionType', null, array(

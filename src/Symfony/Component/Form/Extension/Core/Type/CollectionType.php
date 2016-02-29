@@ -12,16 +12,35 @@
 namespace Symfony\Component\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CollectionList\Factory\CachingFactoryDecorator;
+use Symfony\Component\Form\CollectionList\Factory\DefaultCollectionListFactory;
+use Symfony\Component\Form\CollectionList\Factory\CollectionListFactoryInterface;
+use Symfony\Component\Form\CollectionList\Factory\PropertyAccessDecorator;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
+use Symfony\Component\Form\Extension\Core\EventListener\ResizeCollectionListListener;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\Extension\Core\EventListener\ResizeFormListener;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CollectionType extends AbstractType
 {
+    /**
+     * The factory to create the collection.
+     *
+     * @var CollectionListFactoryInterface
+     */
+    private $collectionListFactory;
+
+    public function __construct(CollectionListFactoryInterface $collectionListFactory = null)
+    {
+        $this->collectionListFactory = $collectionListFactory ?: new CachingFactoryDecorator(
+            new PropertyAccessDecorator(
+                new DefaultCollectionListFactory()
+            )
+        );
+    }
     /**
      * {@inheritdoc}
      */
@@ -32,8 +51,9 @@ class CollectionType extends AbstractType
             $builder->setAttribute('prototype', $prototype->getForm());
         }
 
-        $resizeListener = new ResizeFormListener(
-            $options['entry_type'],
+        $resizeListener = new ResizeCollectionListListener(
+            $options['entry_type_map'],
+            $options['entry_index'],
             $options['entry_options'],
             $options['allow_add'],
             $options['allow_delete'],
@@ -73,6 +93,17 @@ class CollectionType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
+        // BC default "entry_type_map" option to "entry_type" value. To be remove in 4.0.
+        $entryTypeMap = function (Options $options) {
+            if (null === $entryType = $options['entry_type']) {
+                return __NAMESPACE__.'\TextType';
+            } else {
+                @trigger_error('The "entry_type" option is deprecated since version 3.1 and will be removed in 4.0. You should use "entry_type_map" option instead.', E_USER_DEPRECATED);
+            }
+
+            return $entryType;
+        };
+
         $entryOptionsNormalizer = function (Options $options, $entryOptions) {
             if (is_array($entryOptions)) {
                 $entryOptions['block_name'] = 'entry';
@@ -105,15 +136,15 @@ class CollectionType extends AbstractType
                         ? $value['data'] : null)
                 );
 
-            // Default to 'entry_options' option
-            $prototypeOptions = array_replace($entryOptions, $value);
-
             if (null !== $options['prototype_data']) {
                 @trigger_error('The "prototype_data" option is deprecated since version 3.1 and will be removed in 4.0. You should use "prototype_options" option instead.', E_USER_DEPRECATED);
 
                 // Let 'prototype_data' option override `$entryOptions['data']` for BC
                 $prototypeOptions['data'] = $options['prototype_data'];
             }
+
+            // Default to 'entry_options' option
+            $prototypeOptions = array_replace($entryOptions, $value);
 
             return array_replace(array(
                 // Use the collection required state
@@ -123,7 +154,9 @@ class CollectionType extends AbstractType
         };
 
         $resolver->setDefaults(array(
-            'entry_type' => __NAMESPACE__.'\TextType',
+            'entry_type' => null, // deprecated
+            'entry_type_map' => $entryTypeMap, // set default to {@link \Symfony\Component\Form\Extension\Core\Type\TextType} in 4.0
+            'entry_index' => null,
             'entry_options' => array(),
             'prototype' => true,
             'prototype_data' => null, // deprecated
@@ -132,12 +165,15 @@ class CollectionType extends AbstractType
             'allow_add' => false,
             'allow_delete' => false,
             'delete_empty' => false,
+            'collection_loader' => null,
         ));
 
         $resolver->setNormalizer('entry_options', $entryOptionsNormalizer);
         $resolver->setNormalizer('prototype_options', $prototypeOptionsNormalizer);
 
-        $resolver->setAllowedTypes('entry_type', array('string', 'Symfony\Component\Form\FormTypeInterface'));
+        $resolver->setAllowedTypes('entry_type', array('null', 'string', 'Symfony\Component\Form\FormTypeInterface'));
+        $resolver->setAllowedTypes('entry_type_map', array('string', 'callable', 'Symfony\Component\Form\FormTypeInterface'));
+        $resolver->setAllowedTypes('entry_index', array('null', 'callable', 'string', 'Symfony\Component\PropertyAccess\PropertyPath'));
         $resolver->setAllowedTypes('entry_options', array('array', 'callable'));
         $resolver->setAllowedTypes('prototype', 'bool');
         $resolver->setAllowedTypes('prototype_name', 'string');
@@ -145,6 +181,7 @@ class CollectionType extends AbstractType
         $resolver->setAllowedTypes('allow_add', 'bool');
         $resolver->setAllowedTypes('allow_delete', 'bool');
         $resolver->setAllowedTypes('delete_empty', 'bool');
+        $resolver->setAllowedTypes('collection_loader', array('null', 'string', 'Symfony\Component\Form\CollectionList\Loader\CollectionListLoader'));
     }
 
     /**
