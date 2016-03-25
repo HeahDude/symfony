@@ -17,7 +17,28 @@
             <argument type="service" id="logger" on-invalid="ignore" />
         </service>
 
-        <service id="argument_resolver" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver" public="false" />
+        <service id="argument_resolver" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver" public="false">
+            <argument type="service" id="argument_metadata_actory" />
+            <argument type="collection" />
+        </service>
+
+        <service id="argument_metadata_actory" class="Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory" public="false" />
+
+        <service id="argument_value_resolver.argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttribute" public="false">
+            <tag name="controller_argument.value_resolver" priority="100" />
+        </service>
+
+        <service id="argument_value_resolver.variadic_argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentFromAttribute" public="false">
+            <tag name="controller_argument.value_resolver" priority="75" />
+        </service>
+
+        <service id="argument_value_resolver.argument_is_request" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentIsRequest" public="false">
+            <tag name="controller_argument.value_resolver" priority="50" />
+        </service>
+
+        <service id="argument_value_resolver.default_argument_value" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValue" public="false">
+            <tag name="controller_argument.value_resolver" priority="-100" />
+        </service>
 
         <service id="response_listener" class="Symfony\Component\HttpKernel\EventListener\ResponseListener">
             <tag name="kernel.event_subscriber" />

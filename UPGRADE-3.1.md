@@ -34,7 +34,8 @@ HttpKernel
  * The `ControllerResolver::getArguments()` method is deprecated and will be
    removed in 4.0. If you have your own `ControllerResolverInterface`
    implementation, you should replace this method by implementing the
-   `ArgumentResolverInterface` and injecting it in the HttpKernel.
+   `ArgumentResolverInterface` and injecting it in the HttpKernel, or using
+   the `ArgumentResolver` and injecting this in the `HttpKernel`.
 
 Serializer
 ----------

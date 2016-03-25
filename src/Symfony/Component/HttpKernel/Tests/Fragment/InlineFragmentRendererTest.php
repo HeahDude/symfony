@@ -13,7 +13,14 @@ namespace Symfony\Component\HttpKernel\Tests\Fragment;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttribute;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentIsRequest;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValue;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentFromAttribute;
+use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Symfony\Component\HttpKernel\Controller\LegacyArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
+use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -51,7 +58,10 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $strategy->render(new ControllerReference('main_controller', array('object' => $object), array()), Request::create('/'));
     }
 
-    public function testRenderWithObjectsAsAttributesPassedAsObjectsInTheController()
+    /**
+     * @group legacy
+     */
+    public function testRenderWithObjectsAsAttributesPassedAsObjectsInTheControllerLegacy()
     {
         $resolver = $this->getMock('Symfony\\Component\\HttpKernel\\Controller\\ControllerResolver', array('getController'));
         $resolver
@@ -62,7 +72,34 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
             }))
         ;
 
-        $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack(), new ArgumentResolver());
+        $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack());
+        $renderer = new InlineFragmentRenderer($kernel);
+
+        $response = $renderer->render(new ControllerReference('main_controller', array('object' => new \stdClass(), 'object1' => new Bar()), array()), Request::create('/'));
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testRenderWithObjectsAsAttributesPassedAsObjectsInTheController()
+    {
+        $resolver = $this->getMock(ControllerResolverInterface::class);
+        $resolver
+            ->expects($this->once())
+            ->method('getController')
+            ->will($this->returnValue(function (\stdClass $object, Bar $object1) {
+                return new Response($object1->getBar());
+            }))
+        ;
+        $argumentValueResolvers = [
+            new ArgumentFromAttribute(),
+            new VariadicArgumentFromAttribute(),
+            new ArgumentIsRequest(),
+            new DefaultArgumentValue(),
+        ];
+
+        $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack(), new ArgumentResolver(new ArgumentMetadataFactory(), $argumentValueResolvers));
         $renderer = new InlineFragmentRenderer($kernel);
 
         $response = $renderer->render(new ControllerReference('main_controller', array('object' => new \stdClass(), 'object1' => new Bar()), array()), Request::create('/'));
