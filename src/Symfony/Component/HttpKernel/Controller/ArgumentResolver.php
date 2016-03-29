@@ -21,9 +21,6 @@ use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFac
  */
 final class ArgumentResolver implements ArgumentResolverInterface
 {
-    /**
-     * @var ArgumentMetadataFactoryInterface
-     */
     private $argumentMetadataFactory;
 
     /**
@@ -31,19 +28,12 @@ final class ArgumentResolver implements ArgumentResolverInterface
      */
     private $argumentValueResolvers;
 
-    /**
-     * @param ArgumentMetadataFactoryInterface $argumentMetadataFactory
-     * @param ArgumentValueResolverInterface[] $argumentValueResolvers
-     */
     public function __construct(ArgumentMetadataFactoryInterface $argumentMetadataFactory = null, array $argumentValueResolvers = array())
     {
         $this->argumentMetadataFactory = $argumentMetadataFactory;
         $this->argumentValueResolvers = $argumentValueResolvers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getArguments(Request $request, $controller)
     {
         $arguments = array();

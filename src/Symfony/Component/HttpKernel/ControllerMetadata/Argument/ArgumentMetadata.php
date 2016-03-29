@@ -18,38 +18,12 @@ namespace Symfony\Component\HttpKernel\ControllerMetadata\Argument;
  */
 class ArgumentMetadata
 {
-    /**
-     * @var string
-     */
     private $argumentName;
-
-    /**
-     * @var string
-     */
     private $argumentType;
-
-    /**
-     * @var bool
-     */
     private $isVariadic;
-
-    /**
-     * @var bool
-     */
     private $hasDefaultValue;
-
-    /**
-     * @var mixed
-     */
     private $defaultValue;
 
-    /**
-     * @param string $argumentName
-     * @param string $argumentType
-     * @param bool   $isVariadic
-     * @param bool   $hasDefaultValue
-     * @param mixed  $defaultValue
-     */
     public function __construct($argumentName, $argumentType, $isVariadic, $hasDefaultValue, $defaultValue)
     {
         $this->argumentName = $argumentName;
