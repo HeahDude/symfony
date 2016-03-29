@@ -37,8 +37,12 @@ final class VariadicArgumentFromAttribute implements ArgumentValueResolverInterf
      */
     public function getValue(Request $request, ArgumentMetadata $argument)
     {
-        $value = $request->attributes->get($argument->getArgumentName(), []);
+        $value = $request->attributes->get($argument->getArgumentName());
 
-        return is_array($value) ? $value : [$value];
+        if (!is_array($value)) {
+            throw new \InvalidArgumentException(sprintf('The action argument "...$%1$s" is required to be an array, the request attribute "%1$s" contains a type of "%2$s" instead.', $argument->getArgumentName(), gettype($value)));
+        }
+
+        return $value;
     }
 }

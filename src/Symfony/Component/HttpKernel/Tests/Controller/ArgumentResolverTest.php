@@ -113,6 +113,29 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('foo', 'foo', 'bar'), $resolver->getArguments($request, $controller));
     }
 
+    /**
+     * @requires PHP 5.6
+     * @expectedException \invalidArgumentException
+     */
+    public function testGetVariadicArgumentsWithoutArrayInRequest()
+    {
+        $factory = new ArgumentMetadataFactory();
+        $argumentValueResolvers = [
+            new ArgumentFromAttribute(),
+            new VariadicArgumentFromAttribute(),
+            new ArgumentIsRequest(),
+            new DefaultArgumentValue(),
+        ];
+
+        $resolver = new ArgumentResolver($factory, $argumentValueResolvers);
+
+        $request = Request::create('/');
+        $request->attributes->set('foo', 'foo');
+        $request->attributes->set('bar', 'foo');
+        $controller = array(new VariadicController(), 'action');
+        $this->assertEquals(array('foo', 'foo', 'bar'), $resolver->getArguments($request, $controller));
+    }
+
     public function __invoke($foo, $bar = null)
     {
     }
