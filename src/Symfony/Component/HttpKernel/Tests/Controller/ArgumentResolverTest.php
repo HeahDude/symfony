@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAt
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentIsRequest;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValue;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentFromAttribute;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
 use Symfony\Component\HttpKernel\Tests\Fixtures\Controller\VariadicController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,12 +26,12 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
     public function testGetArguments()
     {
         $factory = new ArgumentMetadataFactory();
-        $argumentValueResolvers = [
+        $argumentValueResolvers = array(
             new ArgumentFromAttribute(),
             new VariadicArgumentFromAttribute(),
             new ArgumentIsRequest(),
             new DefaultArgumentValue(),
-        ];
+        );
 
         $resolver = new ArgumentResolver($factory, $argumentValueResolvers);
 
@@ -97,12 +98,12 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
     public function testGetVariadicArguments()
     {
         $factory = new ArgumentMetadataFactory();
-        $argumentValueResolvers = [
+        $argumentValueResolvers = array(
             new ArgumentFromAttribute(),
             new VariadicArgumentFromAttribute(),
             new ArgumentIsRequest(),
             new DefaultArgumentValue(),
-        ];
+        );
 
         $resolver = new ArgumentResolver($factory, $argumentValueResolvers);
 
@@ -120,12 +121,12 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
     public function testGetVariadicArgumentsWithoutArrayInRequest()
     {
         $factory = new ArgumentMetadataFactory();
-        $argumentValueResolvers = [
+        $argumentValueResolvers = array(
             new ArgumentFromAttribute(),
             new VariadicArgumentFromAttribute(),
             new ArgumentIsRequest(),
             new DefaultArgumentValue(),
-        ];
+        );
 
         $resolver = new ArgumentResolver($factory, $argumentValueResolvers);
 
@@ -133,7 +134,27 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $request->attributes->set('foo', 'foo');
         $request->attributes->set('bar', 'foo');
         $controller = array(new VariadicController(), 'action');
-        $this->assertEquals(array('foo', 'foo', 'bar'), $resolver->getArguments($request, $controller));
+        $resolver->getArguments($request, $controller);
+    }
+
+    /**
+     * @requires PHP 5.6
+     * @expectedException \invalidArgumentException
+     */
+    public function testGetArgumentWithoutArray()
+    {
+        $factory = new ArgumentMetadataFactory();
+        $valueResolver = $this->getMock(ArgumentValueResolverInterface::class);
+        $resolver = new ArgumentResolver($factory, array($valueResolver));
+
+        $valueResolver->expects($this->any())->method('supports')->willReturn(true);
+        $valueResolver->expects($this->any())->method('getValue')->willReturn('foo');
+
+        $request = Request::create('/');
+        $request->attributes->set('foo', 'foo');
+        $request->attributes->set('bar', 'foo');
+        $controller = array($this, 'controllerMethod2');
+        $resolver->getArguments($request, $controller);
     }
 
     public function __invoke($foo, $bar = null)

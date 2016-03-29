@@ -49,33 +49,34 @@ final class ArgumentResolver implements ArgumentResolverInterface
         $arguments = array();
 
         foreach ($this->argumentMetadataFactory->createArgumentMetadata($controller) as $metadata) {
-            $isResolved = false;
             foreach ($this->argumentValueResolvers as $resolver) {
-                if ($resolver->supports($request, $metadata)) {
-                    $resolved = $resolver->getValue($request, $metadata);
-
-                    // variadic is a special case, always being the last and being an array
-                    if (is_array($resolved) && $metadata->isVariadic()) {
-                        return array_merge($arguments, $resolved);
-                    }
-
-                    $arguments[] = $resolved;
-                    $isResolved = true;
-                    break;
-                }
-            }
-
-            if (!$isResolved) {
-                $repr = $controller;
-
-                if (is_array($controller)) {
-                    $repr = sprintf('%s::%s()', get_class($controller[0]), $controller[1]);
-                } elseif (is_object($controller)) {
-                    $repr = get_class($controller);
+                if (!$resolver->supports($request, $metadata)) {
+                    continue;
                 }
 
-                throw new \RuntimeException(sprintf('Controller "%s" requires that you provide a value for the "$%s" argument (because there is no default value or because there is a non optional argument after this one).', $repr, $metadata->getArgumentName()));
+                $resolved = $resolver->getValue($request, $metadata);
+
+                if (!is_array($resolved)) {
+                    throw new \InvalidArgumentException(sprintf('%s::getValue() must return an array, %s given.', get_class($resolver), gettype($resolved)));
+                }
+
+                foreach ($resolved as $append) {
+                    $arguments[] = $append;
+                }
+
+                // continue to the next controller argument
+                continue 2;
             }
+
+            $representative = $controller;
+
+            if (is_array($representative)) {
+                $representative = sprintf('%s::%s()', get_class($representative[0]), $representative[1]);
+            } elseif (is_object($representative)) {
+                $representative = get_class($representative);
+            }
+
+            throw new \RuntimeException(sprintf('Controller "%s" requires that you provide a value for the "$%s" argument (because there is no default value or because there is a non optional argument after this one).', $representative, $metadata->getArgumentName()));
         }
 
         return $arguments;

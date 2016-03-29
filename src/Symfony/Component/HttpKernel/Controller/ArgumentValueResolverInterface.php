@@ -32,10 +32,15 @@ interface ArgumentValueResolverInterface
     public function supports(Request $request, ArgumentMetadata $argument);
 
     /**
+     * Get the actual value for the argument.
+     *
+     * The return must always be an array:
+     *  - return array($myArgumentValue);
+     *
      * @param Request          $request
      * @param ArgumentMetadata $argument
      *
-     * @return mixed
+     * @return mixed[]
      */
     public function getValue(Request $request, ArgumentMetadata $argument);
 }

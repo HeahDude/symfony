@@ -37,6 +37,6 @@ final class ArgumentFromAttribute implements ArgumentValueResolverInterface
      */
     public function getValue(Request $request, ArgumentMetadata $argument)
     {
-        return $request->attributes->get($argument->getArgumentName());
+        return array($request->attributes->get($argument->getArgumentName()));
     }
 }

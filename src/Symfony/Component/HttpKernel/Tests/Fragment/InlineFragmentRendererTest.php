@@ -91,12 +91,12 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
                 return new Response($object1->getBar());
             }))
         ;
-        $argumentValueResolvers = [
+        $argumentValueResolvers = array(
             new ArgumentFromAttribute(),
             new VariadicArgumentFromAttribute(),
             new ArgumentIsRequest(),
             new DefaultArgumentValue(),
-        ];
+        );
 
         $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack(), new ArgumentResolver(new ArgumentMetadataFactory(), $argumentValueResolvers));
         $renderer = new InlineFragmentRenderer($kernel);

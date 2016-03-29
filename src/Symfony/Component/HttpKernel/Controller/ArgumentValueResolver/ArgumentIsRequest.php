@@ -35,6 +35,6 @@ final class ArgumentIsRequest implements ArgumentValueResolverInterface
      */
     public function getValue(Request $request, ArgumentMetadata $argument)
     {
-        return $request;
+        return array($request);
     }
 }

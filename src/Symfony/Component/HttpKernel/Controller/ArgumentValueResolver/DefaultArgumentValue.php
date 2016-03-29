@@ -35,6 +35,6 @@ final class DefaultArgumentValue implements ArgumentValueResolverInterface
      */
     public function getValue(Request $request, ArgumentMetadata $argument)
     {
-        return $argument->getDefaultValue();
+        return array($argument->getDefaultValue());
     }
 }
