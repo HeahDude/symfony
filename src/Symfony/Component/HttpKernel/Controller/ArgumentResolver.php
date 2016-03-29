@@ -35,7 +35,7 @@ final class ArgumentResolver implements ArgumentResolverInterface
      * @param ArgumentMetadataFactoryInterface $argumentMetadataFactory
      * @param ArgumentValueResolverInterface[] $argumentValueResolvers
      */
-    public function __construct(ArgumentMetadataFactoryInterface $argumentMetadataFactory = null, array $argumentValueResolvers = [])
+    public function __construct(ArgumentMetadataFactoryInterface $argumentMetadataFactory = null, array $argumentValueResolvers = array())
     {
         $this->argumentMetadataFactory = $argumentMetadataFactory;
         $this->argumentValueResolvers = $argumentValueResolvers;

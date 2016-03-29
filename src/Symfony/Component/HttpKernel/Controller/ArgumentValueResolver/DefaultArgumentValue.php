@@ -13,7 +13,7 @@ namespace Symfony\Component\HttpKernel\Controller\ArgumentValueResolver;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
 
 /**
  * Returns the default value defined in the action signature if present and no value has been given.
@@ -25,7 +25,7 @@ final class DefaultArgumentValue implements ArgumentValueResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(Request $request, ArgumentMetadataInterface $argument)
+    public function supports(Request $request, ArgumentMetadata $argument)
     {
         return $argument->hasDefaultValue() && !$request->attributes->has($argument->getArgumentName());
     }
@@ -33,7 +33,7 @@ final class DefaultArgumentValue implements ArgumentValueResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function getValue(Request $request, ArgumentMetadataInterface $argument)
+    public function getValue(Request $request, ArgumentMetadata $argument)
     {
         return $argument->getDefaultValue();
     }

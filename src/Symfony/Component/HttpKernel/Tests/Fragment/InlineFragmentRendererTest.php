@@ -18,7 +18,6 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentIsRequ
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValue;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentFromAttribute;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
-use Symfony\Component\HttpKernel\Controller\LegacyArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
 use Symfony\Component\HttpKernel\HttpKernel;

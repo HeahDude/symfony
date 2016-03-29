@@ -21,7 +21,7 @@ interface ArgumentMetadataFactoryInterface
     /**
      * @param mixed $controller The controller to resolve the arguments for.
      *
-     * @return ArgumentMetadataInterface[]
+     * @return ArgumentMetadata[]
      */
     public function createArgumentMetadata($controller);
 }

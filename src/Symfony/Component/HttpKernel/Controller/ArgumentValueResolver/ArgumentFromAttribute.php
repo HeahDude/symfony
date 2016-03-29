@@ -13,7 +13,7 @@ namespace Symfony\Component\HttpKernel\Controller\ArgumentValueResolver;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
 
 /**
  * Grabs a non-variadic value from the request and returns it.
@@ -27,7 +27,7 @@ final class ArgumentFromAttribute implements ArgumentValueResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(Request $request, ArgumentMetadataInterface $argument)
+    public function supports(Request $request, ArgumentMetadata $argument)
     {
         return !$argument->isVariadic() && $request->attributes->has($argument->getArgumentName());
     }
@@ -35,7 +35,7 @@ final class ArgumentFromAttribute implements ArgumentValueResolverInterface
     /**
      * {@inheritdoc}
      */
-    public function getValue(Request $request, ArgumentMetadataInterface $argument)
+    public function getValue(Request $request, ArgumentMetadata $argument)
     {
         return $request->attributes->get($argument->getArgumentName());
     }

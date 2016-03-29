@@ -12,7 +12,7 @@
 namespace Symfony\Component\HttpKernel\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
 
 /**
  * Responsible for the value of an argument based on its metadata.
@@ -22,20 +22,20 @@ use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataInt
 interface ArgumentValueResolverInterface
 {
     /**
-     * Should return true if this resolver can resolve the value for the given ArgumentMetadataInterface.
+     * Should return true if this resolver can resolve the value for the given ArgumentMetadata.
      *
-     * @param Request                   $request
-     * @param ArgumentMetadataInterface $argument
+     * @param Request          $request
+     * @param ArgumentMetadata $argument
      *
      * @return bool
      */
-    public function supports(Request $request, ArgumentMetadataInterface $argument);
+    public function supports(Request $request, ArgumentMetadata $argument);
 
     /**
-     * @param Request                   $request
-     * @param ArgumentMetadataInterface $argument
+     * @param Request          $request
+     * @param ArgumentMetadata $argument
      *
      * @return mixed
      */
-    public function getValue(Request $request, ArgumentMetadataInterface $argument);
+    public function getValue(Request $request, ArgumentMetadata $argument);
 }

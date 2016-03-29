@@ -23,7 +23,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
      */
     public function createArgumentMetadata($controller)
     {
-        $arguments = [];
+        $arguments = array();
 
         if (is_array($controller)) {
             $reflection = new \ReflectionMethod($controller[0], $controller[1]);
@@ -73,9 +73,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
      */
     private function getDefaulValue(\ReflectionParameter $parameter)
     {
-        return $this->hasDefaulValue($parameter)
-            ? $parameter->getDefaultValue()
-            : null;
+        return $this->hasDefaulValue($parameter) ? $parameter->getDefaultValue() : null;
     }
 
     /**
@@ -88,15 +86,11 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
     private function getType(\ReflectionParameter $parameter)
     {
         if (PHP_VERSION_ID >= 70000) {
-            return $parameter->hasType()
-                ? (string) $parameter->getType()
-                : null;
+            return $parameter->hasType() ? (string) $parameter->getType() : null;
         }
 
         $refClass = $parameter->getClass();
 
-        return $refClass
-            ? $refClass->getName()
-            : null;
+        return $refClass ? $refClass->getName() : null;
     }
 }

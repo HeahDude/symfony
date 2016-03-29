@@ -16,7 +16,7 @@ namespace Symfony\Component\HttpKernel\ControllerMetadata\Argument;
  *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
-final class ArgumentMetadata implements ArgumentMetadataInterface
+class ArgumentMetadata
 {
     /**
      * @var string
@@ -60,7 +60,9 @@ final class ArgumentMetadata implements ArgumentMetadataInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the name as given in PHP, $foo would yield "foo".
+     *
+     * @return string
      */
     public function getArgumentName()
     {
@@ -68,7 +70,9 @@ final class ArgumentMetadata implements ArgumentMetadataInterface
     }
 
     /**
-     * {@inheritdoc}
+     * The PHP class in 5.5+ and additionally the basic type in PHP 7.0+.
+     *
+     * @return string
      */
     public function getArgumentType()
     {
@@ -76,7 +80,9 @@ final class ArgumentMetadata implements ArgumentMetadataInterface
     }
 
     /**
-     * {@inheritdoc}
+     * If the argument is defined as "...$variadic".
+     *
+     * @return bool
      */
     public function isVariadic()
     {
@@ -84,7 +90,11 @@ final class ArgumentMetadata implements ArgumentMetadataInterface
     }
 
     /**
-     * {@inheritdoc}
+     * If the argument has a default value.
+     *
+     * Implies an optional argument when true.
+     *
+     * @return bool
      */
     public function hasDefaultValue()
     {
@@ -92,7 +102,11 @@ final class ArgumentMetadata implements ArgumentMetadataInterface
     }
 
     /**
-     * {@inheritdoc}
+     * The default value of the argument.
+     *
+     * Make sure to call {@see self::hasDefaultValue()} first to see if a default value is possible.
+     *
+     * @return mixed
      */
     public function getDefaultValue()
     {
