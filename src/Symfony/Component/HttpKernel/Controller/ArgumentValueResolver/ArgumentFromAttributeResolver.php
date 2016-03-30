@@ -26,11 +26,11 @@ final class ArgumentFromAttributeResolver implements ArgumentValueResolverInterf
 {
     public function supports(Request $request, ArgumentMetadata $argument)
     {
-        return !$argument->isVariadic() && $request->attributes->has($argument->getArgumentName());
+        return !$argument->isVariadic() && $request->attributes->has($argument->getName());
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        yield $request->attributes->get($argument->getArgumentName());
+        yield $request->attributes->get($argument->getName());
     }
 }

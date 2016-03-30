@@ -24,7 +24,7 @@ final class RequestResolver implements ArgumentValueResolverInterface
 {
     public function supports(Request $request, ArgumentMetadata $argument)
     {
-        return $argument->getArgumentType() === Request::class || is_subclass_of($request, $argument->getArgumentType());
+        return $argument->getType() === Request::class || is_subclass_of($request, $argument->getType());
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument)

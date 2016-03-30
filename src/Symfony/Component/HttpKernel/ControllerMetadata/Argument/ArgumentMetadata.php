@@ -18,16 +18,16 @@ namespace Symfony\Component\HttpKernel\ControllerMetadata\Argument;
  */
 class ArgumentMetadata
 {
-    private $argumentName;
-    private $argumentType;
+    private $name;
+    private $type;
     private $isVariadic;
     private $hasDefaultValue;
     private $defaultValue;
 
-    public function __construct($argumentName, $argumentType, $isVariadic, $hasDefaultValue, $defaultValue)
+    public function __construct($name, $type, $isVariadic, $hasDefaultValue, $defaultValue)
     {
-        $this->argumentName = $argumentName;
-        $this->argumentType = $argumentType;
+        $this->name = $name;
+        $this->type = $type;
         $this->isVariadic = $isVariadic;
         $this->hasDefaultValue = $hasDefaultValue;
         $this->defaultValue = $defaultValue;
@@ -38,9 +38,9 @@ class ArgumentMetadata
      *
      * @return string
      */
-    public function getArgumentName()
+    public function getName()
     {
-        return $this->argumentName;
+        return $this->name;
     }
 
     /**
@@ -48,9 +48,9 @@ class ArgumentMetadata
      *
      * @return string
      */
-    public function getArgumentType()
+    public function getType()
     {
-        return $this->argumentType;
+        return $this->type;
     }
 
     /**
