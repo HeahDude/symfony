@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
  *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
-final class DefaultArgumentValue implements ArgumentValueResolverInterface
+final class DefaultArgumentValueResolver implements ArgumentValueResolverInterface
 {
     public function supports(Request $request, ArgumentMetadata $argument)
     {

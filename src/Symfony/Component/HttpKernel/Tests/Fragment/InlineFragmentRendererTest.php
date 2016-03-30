@@ -13,10 +13,10 @@ namespace Symfony\Component\HttpKernel\Tests\Fragment;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttribute;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentIsRequest;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValue;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentFromAttribute;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttributeResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValueResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\RequestResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicRequestAttributeResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
@@ -92,10 +92,10 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
             }))
         ;
         $argumentValueResolvers = array(
-            new ArgumentFromAttribute(),
-            new VariadicArgumentFromAttribute(),
-            new ArgumentIsRequest(),
-            new DefaultArgumentValue(),
+            new ArgumentFromAttributeResolver(),
+            new VariadicRequestAttributeResolver(),
+            new RequestResolver(),
+            new DefaultArgumentValueResolver(),
         );
 
         $kernel = new HttpKernel(new EventDispatcher(), $resolver, new RequestStack(), new ArgumentResolver(new ArgumentMetadataFactory(), $argumentValueResolvers));

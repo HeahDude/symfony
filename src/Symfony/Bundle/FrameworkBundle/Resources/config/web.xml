@@ -24,19 +24,19 @@
 
         <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory" public="false" />
 
-        <service id="argument_value_resolver.argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttribute" public="false">
+        <service id="argument_value_resolver.argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttributeResolver" public="false">
             <tag name="controller_argument.value_resolver" priority="100" />
         </service>
 
-        <service id="argument_value_resolver.argument_is_request" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentIsRequest" public="false">
+        <service id="argument_value_resolver.argument_is_request" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\RequestResolver" public="false">
             <tag name="controller_argument.value_resolver" priority="50" />
         </service>
 
-        <service id="argument_value_resolver.default_argument_value" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValue" public="false">
+        <service id="argument_value_resolver.default_argument_value" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValueResolver" public="false">
             <tag name="controller_argument.value_resolver" priority="-100" />
         </service>
 
-        <service id="argument_value_resolver.variadic_argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentFromAttribute" public="false">
+        <service id="argument_value_resolver.variadic_argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicRequestAttributeResolver" public="false">
             <tag name="controller_argument.value_resolver" priority="-150" />
         </service>
 

@@ -16,19 +16,29 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
 
 /**
- * Supports the same instance as the request object passed along.
+ * Grabs the variadic value from the request and returns it.
+ *
+ * Opposite of {@see ArgumentFromAttributeResolver}.
  *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
-final class ArgumentIsRequest implements ArgumentValueResolverInterface
+final class VariadicRequestAttributeResolver implements ArgumentValueResolverInterface
 {
     public function supports(Request $request, ArgumentMetadata $argument)
     {
-        return $argument->getArgumentType() === Request::class || is_subclass_of($request, $argument->getArgumentType());
+        return $argument->isVariadic() && $request->attributes->has($argument->getArgumentName());
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        yield $request;
+        $values = $request->attributes->get($argument->getArgumentName());
+
+        if (!is_array($values)) {
+            throw new \InvalidArgumentException(sprintf('The action argument "...$%1$s" is required to be an array, the request attribute "%1$s" contains a type of "%2$s" instead.', $argument->getArgumentName(), gettype($values)));
+        }
+
+        foreach ($values as $value) {
+            yield $value;
+        }
     }
 }

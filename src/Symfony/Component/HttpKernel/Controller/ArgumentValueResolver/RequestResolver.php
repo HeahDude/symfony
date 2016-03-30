@@ -16,21 +16,19 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
 
 /**
- * Grabs a non-variadic value from the request and returns it.
- *
- * Opposite of {@see VariadicArgumentFromAttribute}.
+ * Supports the same instance as the request object passed along.
  *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
-final class ArgumentFromAttribute implements ArgumentValueResolverInterface
+final class RequestResolver implements ArgumentValueResolverInterface
 {
     public function supports(Request $request, ArgumentMetadata $argument)
     {
-        return !$argument->isVariadic() && $request->attributes->has($argument->getArgumentName());
+        return $argument->getArgumentType() === Request::class || is_subclass_of($request, $argument->getArgumentType());
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        yield $request->attributes->get($argument->getArgumentName());
+        yield $request;
     }
 }
