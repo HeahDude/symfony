@@ -148,7 +148,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $resolver = new ArgumentResolver($factory, array($valueResolver));
 
         $valueResolver->expects($this->any())->method('supports')->willReturn(true);
-        $valueResolver->expects($this->any())->method('getValue')->willReturn('foo');
+        $valueResolver->expects($this->any())->method('resolve')->willReturn('foo');
 
         $request = Request::create('/');
         $request->attributes->set('foo', 'foo');

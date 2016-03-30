@@ -32,15 +32,17 @@ interface ArgumentValueResolverInterface
     public function supports(Request $request, ArgumentMetadata $argument);
 
     /**
-     * Get the actual value for the argument.
+     * Yield the possible value(s).
      *
-     * The return must always be an array:
-     *  - return array($myArgumentValue);
+     * One yield is equal to one argument, only yield more than once if you're working with
+     * variadic arguments or something similar.
      *
      * @param Request          $request
      * @param ArgumentMetadata $argument
      *
-     * @return mixed[]
+     * @yield mixed
+     *
+     * @return \Generator
      */
-    public function getValue(Request $request, ArgumentMetadata $argument);
+    public function resolve(Request $request, ArgumentMetadata $argument);
 }

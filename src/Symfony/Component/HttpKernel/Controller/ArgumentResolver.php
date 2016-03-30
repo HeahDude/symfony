@@ -44,10 +44,10 @@ final class ArgumentResolver implements ArgumentResolverInterface
                     continue;
                 }
 
-                $resolved = $resolver->getValue($request, $metadata);
+                $resolved = $resolver->resolve($request, $metadata);
 
-                if (!is_array($resolved)) {
-                    throw new \InvalidArgumentException(sprintf('%s::getValue() must return an array, %s given.', get_class($resolver), gettype($resolved)));
+                if (!$resolved instanceof \Generator) {
+                    throw new \InvalidArgumentException(sprintf('%s::resolve() must return a \Generator, %s given.', get_class($resolver), gettype($resolved)));
                 }
 
                 foreach ($resolved as $append) {

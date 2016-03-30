@@ -27,8 +27,8 @@ final class DefaultArgumentValue implements ArgumentValueResolverInterface
         return $argument->hasDefaultValue() && !$request->attributes->has($argument->getArgumentName());
     }
 
-    public function getValue(Request $request, ArgumentMetadata $argument)
+    public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        return array($argument->getDefaultValue());
+        yield $argument->getDefaultValue();
     }
 }

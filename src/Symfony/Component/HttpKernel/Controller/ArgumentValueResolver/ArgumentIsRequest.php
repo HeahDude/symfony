@@ -27,8 +27,8 @@ final class ArgumentIsRequest implements ArgumentValueResolverInterface
         return $argument->getArgumentType() === Request::class || is_subclass_of($request, $argument->getArgumentType());
     }
 
-    public function getValue(Request $request, ArgumentMetadata $argument)
+    public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        return array($request);
+        yield $request;
     }
 }

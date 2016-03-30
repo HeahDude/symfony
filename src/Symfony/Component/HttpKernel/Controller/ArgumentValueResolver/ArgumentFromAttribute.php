@@ -29,8 +29,8 @@ final class ArgumentFromAttribute implements ArgumentValueResolverInterface
         return !$argument->isVariadic() && $request->attributes->has($argument->getArgumentName());
     }
 
-    public function getValue(Request $request, ArgumentMetadata $argument)
+    public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        return array($request->attributes->get($argument->getArgumentName()));
+        yield $request->attributes->get($argument->getArgumentName());
     }
 }
