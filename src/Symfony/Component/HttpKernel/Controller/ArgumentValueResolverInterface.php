@@ -39,8 +39,6 @@ interface ArgumentValueResolverInterface
      * @param Request          $request
      * @param ArgumentMetadata $argument
      *
-     * @yield mixed
-     *
      * @return \Generator
      */
     public function resolve(Request $request, ArgumentMetadata $argument);

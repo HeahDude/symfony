@@ -22,11 +22,17 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
  */
 final class RequestResolver implements ArgumentValueResolverInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function supports(Request $request, ArgumentMetadata $argument)
     {
         return $argument->getType() === Request::class || is_subclass_of($request, $argument->getType());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
         yield $request;

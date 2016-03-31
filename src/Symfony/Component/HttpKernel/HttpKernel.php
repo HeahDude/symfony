@@ -39,14 +39,6 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
     protected $requestStack;
     private $argumentResolver;
 
-    /**
-     * Constructor.
-     *
-     * @param EventDispatcherInterface    $dispatcher       An EventDispatcherInterface instance
-     * @param ControllerResolverInterface $resolver         A ControllerResolverInterface instance
-     * @param RequestStack                $requestStack     A stack for master/sub requests
-     * @param ArgumentResolverInterface   $argumentResolver An ArgumentResolverInterface instance
-     */
     public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, RequestStack $requestStack = null, ArgumentResolverInterface $argumentResolver = null)
     {
         $this->dispatcher = $dispatcher;

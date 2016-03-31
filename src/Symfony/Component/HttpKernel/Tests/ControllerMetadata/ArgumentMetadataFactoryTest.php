@@ -31,7 +31,7 @@ class ArgumentMetadataFactoryTest extends \PHPUnit_Framework_TestCase
         $arguments = $this->factory->createArgumentMetadata([$this, 'signature1']);
 
         $this->assertEquals(array(
-            new ArgumentMetadata('foo', ArgumentMetadataFactoryTest::class, false, false, null),
+            new ArgumentMetadata('foo', self::class, false, false, null),
             new ArgumentMetadata('bar', 'array', false, false, null),
             new ArgumentMetadata('baz', 'callable', false, false, null),
         ), $arguments);
@@ -42,12 +42,11 @@ class ArgumentMetadataFactoryTest extends \PHPUnit_Framework_TestCase
         $arguments = $this->factory->createArgumentMetadata([$this, 'signature2']);
 
         $this->assertEquals(array(
-            new ArgumentMetadata('foo', ArgumentMetadataFactoryTest::class, false, true, null),
+            new ArgumentMetadata('foo', self::class, false, true, null),
             new ArgumentMetadata('bar', __NAMESPACE__.'\FakeClassThatDoesNotExist', false, true, null),
             new ArgumentMetadata('baz', 'Fake\ImportedAndFake', false, true, null),
         ), $arguments);
     }
-
 
     public function testSignature3()
     {

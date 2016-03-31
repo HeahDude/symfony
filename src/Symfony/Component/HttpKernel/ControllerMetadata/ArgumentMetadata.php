@@ -24,6 +24,13 @@ class ArgumentMetadata
     private $hasDefaultValue;
     private $defaultValue;
 
+    /**
+     * @param string $name
+     * @param string $type
+     * @param bool   $isVariadic
+     * @param bool   $hasDefaultValue
+     * @param mixed  $defaultValue
+     */
     public function __construct($name, $type, $isVariadic, $hasDefaultValue, $defaultValue)
     {
         $this->name = $name;

@@ -18,6 +18,9 @@ namespace Symfony\Component\HttpKernel\ControllerMetadata;
  */
 final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function createArgumentMetadata($controller)
     {
         $arguments = array();
@@ -50,7 +53,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
     }
 
     /**
-     * Determines whether an argument has a default value
+     * Determines whether an argument has a default value.
      *
      * @param \ReflectionParameter $parameter
      *

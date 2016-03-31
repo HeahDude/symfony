@@ -22,6 +22,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class LegacyArgumentResolver implements ArgumentResolverInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getArguments(Request $request, $controller)
     {
         // only trigger the deprecation notice if actually used, the ControllerResolver still extends this for BC reasons

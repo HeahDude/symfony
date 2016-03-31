@@ -34,6 +34,9 @@ final class ArgumentResolver implements ArgumentResolverInterface
         $this->argumentValueResolvers = $argumentValueResolvers;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getArguments(Request $request, $controller)
     {
         $arguments = array();
