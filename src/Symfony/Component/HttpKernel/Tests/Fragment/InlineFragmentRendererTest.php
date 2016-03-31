@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttributeResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValueResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\RequestResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicRequestAttributeResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentValueResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
@@ -93,7 +93,7 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         ;
         $argumentValueResolvers = array(
             new ArgumentFromAttributeResolver(),
-            new VariadicRequestAttributeResolver(),
+            new VariadicArgumentValueResolver(),
             new RequestResolver(),
             new DefaultArgumentValueResolver(),
         );

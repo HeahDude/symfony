@@ -18,8 +18,6 @@ use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
 /**
  * Grabs a non-variadic value from the request and returns it.
  *
- * Opposite of {@see VariadicRequestAttributeResolver}.
- *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
 final class ArgumentFromAttributeResolver implements ArgumentValueResolverInterface

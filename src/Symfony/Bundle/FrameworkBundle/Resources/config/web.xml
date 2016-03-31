@@ -36,7 +36,7 @@
             <tag name="controller_argument.value_resolver" priority="-100" />
         </service>
 
-        <service id="argument_value_resolver.variadic_argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicRequestAttributeResolver" public="false">
+        <service id="argument_value_resolver.variadic_argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentValueResolver" public="false">
             <tag name="controller_argument.value_resolver" priority="-150" />
         </service>
 

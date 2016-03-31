@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttributeResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumentValueResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\RequestResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicRequestAttributeResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentValueResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
 use Symfony\Component\HttpKernel\Tests\Fixtures\Controller\VariadicController;
@@ -28,7 +28,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $factory = new ArgumentMetadataFactory();
         $argumentValueResolvers = array(
             new ArgumentFromAttributeResolver(),
-            new VariadicRequestAttributeResolver(),
+            new VariadicArgumentValueResolver(),
             new RequestResolver(),
             new DefaultArgumentValueResolver(),
         );
@@ -100,7 +100,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $factory = new ArgumentMetadataFactory();
         $argumentValueResolvers = array(
             new ArgumentFromAttributeResolver(),
-            new VariadicRequestAttributeResolver(),
+            new VariadicArgumentValueResolver(),
             new RequestResolver(),
             new DefaultArgumentValueResolver(),
         );
@@ -123,7 +123,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $factory = new ArgumentMetadataFactory();
         $argumentValueResolvers = array(
             new ArgumentFromAttributeResolver(),
-            new VariadicRequestAttributeResolver(),
+            new VariadicArgumentValueResolver(),
             new RequestResolver(),
             new DefaultArgumentValueResolver(),
         );

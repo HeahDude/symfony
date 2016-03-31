@@ -34,8 +34,7 @@ interface ArgumentValueResolverInterface
     /**
      * Yield the possible value(s).
      *
-     * One yield is equal to one argument, only yield more than once if you're working with
-     * variadic arguments or something similar.
+     * An implementation must yield at least one value.
      *
      * @param Request          $request
      * @param ArgumentMetadata $argument
