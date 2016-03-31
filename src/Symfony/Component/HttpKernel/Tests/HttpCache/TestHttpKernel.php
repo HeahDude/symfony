@@ -36,7 +36,7 @@ class TestHttpKernel extends HttpKernel implements ControllerResolverInterface, 
         $this->headers = $headers;
         $this->customizer = $customizer;
 
-        parent::__construct(new EventDispatcher(), $this);
+        parent::__construct(new EventDispatcher(), $this, null, $this);
     }
 
     public function getBackendRequest()
