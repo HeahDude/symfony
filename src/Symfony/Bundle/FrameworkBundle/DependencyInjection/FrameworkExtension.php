@@ -170,7 +170,7 @@ class FrameworkExtension extends Extension
             'Symfony\\Component\\HttpKernel\\EventListener\\ResponseListener',
             'Symfony\\Component\\HttpKernel\\EventListener\\RouterListener',
             'Symfony\\Component\\HttpKernel\\Controller\\ControllerResolver',
-            'Symfony\\Component\\HttpKernel\\Controller\\LegacyArgumentResolver',
+            'Symfony\\Component\\HttpKernel\\Controller\\ArgumentResolver',
             'Symfony\\Component\\HttpKernel\\Event\\KernelEvent',
             'Symfony\\Component\\HttpKernel\\Event\\FilterControllerEvent',
             'Symfony\\Component\\HttpKernel\\Event\\FilterResponseEvent',
