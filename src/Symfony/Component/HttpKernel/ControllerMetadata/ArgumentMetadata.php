@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpKernel\ControllerMetadata\Argument;
+namespace Symfony\Component\HttpKernel\ControllerMetadata;
 
 /**
  * Responsible for storing metadata of an argument.

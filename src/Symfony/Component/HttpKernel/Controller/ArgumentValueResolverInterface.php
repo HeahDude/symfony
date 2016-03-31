@@ -12,7 +12,7 @@
 namespace Symfony\Component\HttpKernel\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
  * Responsible for the value of an argument based on its metadata.

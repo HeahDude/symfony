@@ -12,7 +12,7 @@
 namespace Symfony\Component\HttpKernel\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactoryInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactoryInterface;
 
 /**
  * Responsible for the resolving of arguments passed to an action.

@@ -22,7 +22,7 @@
             <argument type="collection" />
         </service>
 
-        <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory" public="false" />
+        <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory" public="false" />
 
         <service id="argument_value_resolver.argument_from_attribute" class="Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\ArgumentFromAttributeResolver" public="false">
             <tag name="controller_argument.value_resolver" priority="100" />

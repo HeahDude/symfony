@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\RequestResolve
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentValueResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer;
 use Symfony\Component\HttpKernel\KernelEvents;

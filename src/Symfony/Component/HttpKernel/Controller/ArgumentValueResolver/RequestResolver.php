@@ -13,7 +13,7 @@ namespace Symfony\Component\HttpKernel\Controller\ArgumentValueResolver;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
  * Supports the same instance as the request object passed along.

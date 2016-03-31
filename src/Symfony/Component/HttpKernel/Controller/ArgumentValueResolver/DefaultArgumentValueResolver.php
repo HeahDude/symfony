@@ -13,7 +13,7 @@ namespace Symfony\Component\HttpKernel\Controller\ArgumentValueResolver;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadata;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
  * Returns the default value defined in the action signature if present and no value has been given.

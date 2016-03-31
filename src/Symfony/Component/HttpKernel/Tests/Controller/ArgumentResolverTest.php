@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\DefaultArgumen
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\RequestResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolver\VariadicArgumentValueResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
-use Symfony\Component\HttpKernel\ControllerMetadata\Argument\ArgumentMetadataFactory;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory;
 use Symfony\Component\HttpKernel\Tests\Fixtures\Controller\VariadicController;
 use Symfony\Component\HttpFoundation\Request;
 

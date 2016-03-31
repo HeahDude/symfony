@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpKernel\ControllerMetadata\Argument;
+namespace Symfony\Component\HttpKernel\ControllerMetadata;
 
 /**
  * Builds method argument data.
