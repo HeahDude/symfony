@@ -12,7 +12,7 @@
 namespace Symfony\Component\HttpKernel\ControllerMetadata;
 
 /**
- * Builds method argument data.
+ * Builds {@see ArgumentMetadata} objects based on the given Controller.
  *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
@@ -38,7 +38,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
     }
 
     /**
-     * Tries to detect if the argument is variadic.
+     * Returns whether an argument is variadic.
      *
      * @param \ReflectionParameter $parameter
      *
@@ -50,7 +50,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
     }
 
     /**
-     * Determine if there's a default value.
+     * Determines whether an argument has a default value
      *
      * @param \ReflectionParameter $parameter
      *
@@ -62,7 +62,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
     }
 
     /**
-     * Tries to find the default value.
+     * Returns a default value if available.
      *
      * @param \ReflectionParameter $parameter
      *
@@ -74,7 +74,7 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
     }
 
     /**
-     * Tries to find the type associated with it.
+     * Returns an associated type to the given parameter if available.
      *
      * @param \ReflectionParameter $parameter
      *
@@ -86,7 +86,20 @@ final class ArgumentMetadataFactory implements ArgumentMetadataFactoryInterface
             return $parameter->hasType() ? (string) $parameter->getType() : null;
         }
 
-        $refClass = $parameter->getClass();
+        if ($parameter->isArray()) {
+            return 'array';
+        }
+
+        if ($parameter->isCallable()) {
+            return 'callable';
+        }
+
+        try {
+            $refClass = $parameter->getClass();
+        } catch (\ReflectionException $e) {
+            // mandatory; extract it from the exception message
+            return str_replace(['Class ', ' does not exist'], '', $e->getMessage());
+        }
 
         return $refClass ? $refClass->getName() : null;
     }

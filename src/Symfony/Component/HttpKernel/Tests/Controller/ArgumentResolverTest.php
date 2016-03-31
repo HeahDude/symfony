@@ -116,7 +116,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @requires PHP 5.6
-     * @expectedException \invalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testGetVariadicArgumentsWithoutArrayInRequest()
     {
@@ -139,7 +139,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @requires PHP 5.6
-     * @expectedException \invalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testGetArgumentWithoutArray()
     {

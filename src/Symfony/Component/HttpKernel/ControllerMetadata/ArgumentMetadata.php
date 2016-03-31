@@ -44,7 +44,9 @@ class ArgumentMetadata
     }
 
     /**
-     * The PHP class in 5.5+ and additionally the basic type in PHP 7.0+.
+     * Returns the type of the argument.
+     *
+     * The type is the PHP class in 5.5+ and additionally the basic type in PHP 7.0+.
      *
      * @return string
      */
@@ -54,7 +56,7 @@ class ArgumentMetadata
     }
 
     /**
-     * If the argument is defined as "...$variadic".
+     * Returns whether the argument is defined as "...$variadic".
      *
      * @return bool
      */
@@ -64,9 +66,9 @@ class ArgumentMetadata
     }
 
     /**
-     * If the argument has a default value.
+     * Returns whether the argument has a default value.
      *
-     * Implies an optional argument when true.
+     * Implies whether an argument is optional.
      *
      * @return bool
      */
@@ -76,7 +78,7 @@ class ArgumentMetadata
     }
 
     /**
-     * The default value of the argument.
+     * Returns the default value of the argument.
      *
      * Make sure to call {@see self::hasDefaultValue()} first to see if a default value is possible.
      *

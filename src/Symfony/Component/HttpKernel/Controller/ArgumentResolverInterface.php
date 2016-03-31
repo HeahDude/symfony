@@ -25,7 +25,7 @@ interface ArgumentResolverInterface
      * Returns the arguments to pass to the controller.
      *
      * @param Request  $request    A Request instance
-     * @param callable $controller A PHP callable
+     * @param callable $controller A callable controller
      *
      * @return array An array of arguments to pass to the controller
      *

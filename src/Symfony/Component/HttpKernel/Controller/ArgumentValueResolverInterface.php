@@ -15,14 +15,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
- * Responsible for the value of an argument based on its metadata.
+ * Responsible for resolving the value of an argument based on its metadata.
  *
  * @author Iltar van der Berg <kjarli@gmail.com>
  */
 interface ArgumentValueResolverInterface
 {
     /**
-     * Should return true if this resolver can resolve the value for the given ArgumentMetadata.
+     * Whether this resolver can resolve can resolve the value for the given ArgumentMetadata.
      *
      * @param Request          $request
      * @param ArgumentMetadata $argument
