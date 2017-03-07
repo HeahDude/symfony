@@ -255,59 +255,38 @@ class WorkflowTest extends TestCase
 
     public function testMarkingStateOnApplyWithEventDispatcher()
     {
-        $definition = new Definition(array('a', 'b', 'c', 'd', 'e', 'f'), array(
-            new Transition('t', array('a', 'b', 'c'), array('d', 'e', 'f')),
-        ));
-
-        $initialState = array('a' => 1, 'b' => 1, 'c' => 1);
-        $transitionState = array();
-        $finalState = array('d' => 1, 'e' => 1, 'f' => 1);
+        $definition = new Definition(range('a', 'f'), array(new Transition('t', range('a','c'), range('d', 'f')),));
 
         $subject = new \stdClass();
-        $subject->marking = $initialState;
+        $subject->marking = array('a' => 1, 'b' => 1, 'c' => 1);
 
         $dispatcher = new EventDispatcher();
-        $dispatcher->addListener('workflow.leave', function (Event $event) use ($initialState) {
-            $this->assertEquals(new Marking($initialState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.leave', function (Event $event) use ($initialState) {
-            $this->assertEquals(new Marking($initialState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.leave.a', function (Event $event) use ($initialState) {
-            $this->assertEquals(new Marking($initialState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.leave.b', function (Event $event) use ($initialState) {
-            $this->assertEquals(new Marking($initialState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.leave.c', function (Event $event) use ($initialState) {
-            $this->assertEquals(new Marking($initialState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.transition', function (Event $event) use ($transitionState) {
-            $this->assertEquals(new Marking($transitionState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.transition', function (Event $event) use ($transitionState) {
-            $this->assertEquals(new Marking($transitionState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.transition.t', function (Event $event) use ($transitionState) {
-            $this->assertEquals(new Marking($transitionState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.enter', function (Event $event) use ($finalState) {
-            $this->assertEquals(new Marking($finalState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.enter', function (Event $event) use ($finalState) {
-            $this->assertEquals(new Marking($finalState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.enter.d', function (Event $event) use ($finalState) {
-            $this->assertEquals(new Marking($finalState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.enter.e', function (Event $event) use ($finalState) {
-            $this->assertEquals(new Marking($finalState), $event->getMarking());
-        });
-        $dispatcher->addListener('workflow.test.enter.f', function (Event $event) use ($finalState) {
-            $this->assertEquals(new Marking($finalState), $event->getMarking());
-        });
 
         $workflow = new Workflow($definition, new MultipleStateMarkingStore(), $dispatcher, 'test');
+
+        $assertInitialState = function (Event $event) {
+            $this->assertEquals(new Marking(array('a' => 1, 'b' => 1, 'c' => 1)), $event->getMarking());
+        };
+        $assertTransitionState = function (Event $event) {
+            $this->assertEquals(new Marking(array()), $event->getMarking());
+        };
+        $assertFinalState = function (Event $event) {
+            $this->assertEquals(new Marking(array('d' => 1, 'e' => 1, 'f' => 1)), $event->getMarking());
+        };
+
+        $dispatcher->addListener('workflow.leave', $assertInitialState);
+        $dispatcher->addListener('workflow.test.leave', $assertInitialState);
+        $dispatcher->addListener('workflow.test.leave.a', $assertInitialState);
+        $dispatcher->addListener('workflow.test.leave.b', $assertInitialState);
+        $dispatcher->addListener('workflow.test.leave.c', $assertInitialState);
+        $dispatcher->addListener('workflow.transition', $assertTransitionState);
+        $dispatcher->addListener('workflow.test.transition', $assertTransitionState);
+        $dispatcher->addListener('workflow.test.transition.t', $assertTransitionState);
+        $dispatcher->addListener('workflow.enter', $assertFinalState);
+        $dispatcher->addListener('workflow.test.enter', $assertFinalState);
+        $dispatcher->addListener('workflow.test.enter.d', $assertFinalState);
+        $dispatcher->addListener('workflow.test.enter.e', $assertFinalState);
+        $dispatcher->addListener('workflow.test.enter.f', $assertFinalState);
 
         $workflow->apply($subject, 't');
     }
