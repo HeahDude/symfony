@@ -45,4 +45,18 @@ abstract class AbstractTypeExtension implements FormTypeExtensionInterface
     public function configureOptions(OptionsResolver $resolver)
     {
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        if (!method_exists(static::class, __METHOD__)) {
+            @trigger_error(sprintf('%s::getExtendedType() is deprecated since version 3.3. Implement the static method "getExtendedTypes()" to provide types class name instead. It will be part of %s in 4.0.', static::class, FormTypeExtensionInterface::class), E_USER_DEPRECATED);
+
+            $extension = new static();
+
+            yield $extension->getExtendedType();
+        }
+    }
 }

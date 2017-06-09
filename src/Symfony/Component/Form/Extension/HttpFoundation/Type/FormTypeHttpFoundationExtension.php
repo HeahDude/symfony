@@ -49,4 +49,12 @@ class FormTypeHttpFoundationExtension extends AbstractTypeExtension
     {
         return 'Symfony\Component\Form\Extension\Core\Type\FormType';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        parent::getExtendedTypes();
+    }
 }

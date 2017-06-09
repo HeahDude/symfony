@@ -23,4 +23,12 @@ class SubmitTypeValidatorExtension extends BaseValidatorExtension
     {
         return 'Symfony\Component\Form\Extension\Core\Type\SubmitType';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        parent::getExtendedTypes();
+    }
 }

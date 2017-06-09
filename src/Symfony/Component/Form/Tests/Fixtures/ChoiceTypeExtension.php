@@ -42,4 +42,12 @@ class ChoiceTypeExtension extends AbstractTypeExtension
     {
         return $this->extendedType;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        parent::getExtendedTypes();
+    }
 }

@@ -67,9 +67,21 @@ interface FormTypeExtensionInterface
     public function configureOptions(OptionsResolver $resolver);
 
     /**
+     * @deprecated since 3.4, will be removed in 4.0.
+     *             Implement the static getExtendedTypes() to provide types class name instead.
+     *
      * Returns the name of the type being extended.
      *
      * @return string The name of the type being extended
      */
     public function getExtendedType();
+
+    /**
+     * Uncomment in 4.0.
+     *
+     * Provides the class of the types being extended.
+     *
+     * @return iterable The full qualified class name of the types being extended
+     */
+    //public static function getExtendedTypes();
 }

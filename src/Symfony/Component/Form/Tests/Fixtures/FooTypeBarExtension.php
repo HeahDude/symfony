@@ -32,4 +32,12 @@ class FooTypeBarExtension extends AbstractTypeExtension
     {
         return __NAMESPACE__.'\FooType';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        parent::getExtendedTypes();
+    }
 }

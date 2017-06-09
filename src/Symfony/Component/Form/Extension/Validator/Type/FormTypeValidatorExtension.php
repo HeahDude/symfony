@@ -78,4 +78,12 @@ class FormTypeValidatorExtension extends BaseValidatorExtension
     {
         return 'Symfony\Component\Form\Extension\Core\Type\FormType';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        parent::getExtendedTypes();
+    }
 }

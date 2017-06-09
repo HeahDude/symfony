@@ -12,6 +12,7 @@
 namespace Symfony\Component\Form\Extension\Csrf\Type;
 
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Csrf\EventListener\CsrfValidationListener;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
@@ -133,5 +134,13 @@ class FormTypeCsrfExtension extends AbstractTypeExtension
     public function getExtendedType()
     {
         return 'Symfony\Component\Form\Extension\Core\Type\FormType';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        parent::getExtendedTypes();
     }
 }
