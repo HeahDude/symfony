@@ -29,7 +29,7 @@ abstract class AbstractExtension implements FormExtensionInterface
     /**
      * The type extensions provided by this extension.
      *
-     * @var FormTypeExtensionInterface[] An array of FormTypeExtensionInterface
+     * @var FormTypeExtensionInterface[][] An array of array of FormTypeExtensionInterface by extended form types
      */
     private $typeExtensions;
 
@@ -126,7 +126,7 @@ abstract class AbstractExtension implements FormExtensionInterface
     /**
      * Registers the type extensions.
      *
-     * @return FormTypeExtensionInterface[] An array of FormTypeExtensionInterface instances
+     * @return FormTypeExtensionInterface[] An array of arrays of FormTypeExtensionInterface
      */
     protected function loadTypeExtensions()
     {

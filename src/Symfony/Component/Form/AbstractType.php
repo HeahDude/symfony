@@ -22,6 +22,23 @@ abstract class AbstractType implements FormTypeInterface
     /**
      * {@inheritdoc}
      */
+    public function getParent()
+    {
+        return 'form';
+    }
+
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
     }
@@ -50,22 +67,5 @@ abstract class AbstractType implements FormTypeInterface
         }
 
         $this->configureOptions($resolver);
-    }
-
-    /**
-     * Configures the options for this type.
-     *
-     * @param OptionsResolver $resolver The resolver for the options
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParent()
-    {
-        return 'form';
     }
 }

@@ -12,6 +12,7 @@
 namespace Symfony\Component\Form;
 
 use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\PropertyAccess\PropertyPathInterface;
 
 /**
  * A form group bundling multiple forms in a hierarchical structure.
@@ -23,7 +24,7 @@ interface FormInterface extends \ArrayAccess, \Traversable, \Countable
     /**
      * Sets the parent form.
      *
-     * @return self
+     * @return $this
      *
      * @throws Exception\AlreadySubmittedException if the form has already been submitted
      * @throws Exception\LogicException            when trying to set a parent for a form with
@@ -34,7 +35,7 @@ interface FormInterface extends \ArrayAccess, \Traversable, \Countable
     /**
      * Returns the parent form.
      *
-     * @return self|null The parent form or null if there is none
+     * @return $this|null The parent form or null if there is none
      */
     public function getParent();
 
@@ -45,7 +46,7 @@ interface FormInterface extends \ArrayAccess, \Traversable, \Countable
      * @param string|null              $type    The child's type, if a name was passed
      * @param array                    $options The child's options, if a name was passed
      *
-     * @return self
+     * @return $this
      *
      * @throws Exception\AlreadySubmittedException if the form has already been submitted
      * @throws Exception\LogicException            when trying to add a child to a non-compound form
@@ -171,7 +172,7 @@ interface FormInterface extends \ArrayAccess, \Traversable, \Countable
     /**
      * Returns the property path that the form is mapped to.
      *
-     * @return \Symfony\Component\PropertyAccess\PropertyPathInterface|null The property path
+     * @return PropertyPathInterface|null The property path
      */
     public function getPropertyPath();
 

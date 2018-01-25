@@ -277,6 +277,8 @@ class Button implements \IteratorAggregate, FormInterface
     /**
      * Unsupported method.
      *
+     * @param FormError $error
+     *
      * @throws BadMethodCallException
      */
     public function addError(FormError $error)

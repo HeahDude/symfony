@@ -28,39 +28,38 @@ class RadioListMapper implements DataMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function mapDataToForms($choice, $radios)
+    public function mapDataToForms($data, $forms)
     {
-        if (!is_string($choice)) {
-            throw new UnexpectedTypeException($choice, 'string');
+        if (!is_string($data)) {
+            throw new UnexpectedTypeException($data, 'string');
         }
 
-        foreach ($radios as $radio) {
-            $value = $radio->getConfig()->getOption('value');
-            $radio->setData($choice === $value);
+        foreach ($forms as $radio) {
+            $radio->setData($data === $radio->getConfig()->getOption('value'));
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function mapFormsToData($radios, &$choice)
+    public function mapFormsToData($forms, &$data)
     {
-        if (null !== $choice && !is_string($choice)) {
-            throw new UnexpectedTypeException($choice, 'null or string');
+        if (null !== $data && !is_string($data)) {
+            throw new UnexpectedTypeException($data, 'null or string');
         }
 
-        $choice = null;
-
-        foreach ($radios as $radio) {
+        foreach ($forms as $radio) {
             if ($radio->getData()) {
                 if ('placeholder' === $radio->getName()) {
                     return;
                 }
 
-                $choice = $radio->getConfig()->getOption('value');
+                $data = $radio->getConfig()->getOption('value');
 
                 return;
             }
         }
+
+        $data = null;
     }
 }

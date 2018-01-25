@@ -20,6 +20,13 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 abstract class AbstractTypeExtension implements FormTypeExtensionInterface
 {
     /**
+     * Configures the options for this type.
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -50,12 +57,5 @@ abstract class AbstractTypeExtension implements FormTypeExtensionInterface
         }
 
         $this->configureOptions($resolver);
-    }
-
-    /**
-     * Configures the options for this type.
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
     }
 }

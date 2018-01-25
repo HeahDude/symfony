@@ -49,12 +49,18 @@ use Symfony\Component\PropertyAccess\PropertyPath;
  * demonstrate this, let's extend our above date field to store the value
  * either as "Y-m-d" string or as timestamp. Internally we still want to
  * use a DateTime object for processing. To convert the data from string/integer
- * to DateTime you can set a normalization transformer by calling
+ * to DateTime you can set a model transformer by calling
  * addModelTransformer(). The normalized data is then converted to the displayed
  * data as described before.
  *
- * The conversions (1) -> (2) -> (3) use the transform methods of the transformers.
- * The conversions (3) -> (2) -> (1) use the reverseTransform methods of the transformers.
+ * The conversions (1) -> (2) -> (3) use the transform methods of the transformers on initialization.
+ * The conversions (3) -> (2) -> (1) use the reverseTransform methods of the transformers on submission.
+ *
+ * Actually, as the normalized data can by modified during event the following conversion happen:
+ *  - reverse view transformation (3) -> (2)
+ *  - 2' = dispatch of 2
+ *  - view transformation (2') -> (3)
+ *  - reverse model transformation (2') -> (1)
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
@@ -71,7 +77,7 @@ class Form implements \IteratorAggregate, FormInterface
     /**
      * The parent of this form.
      *
-     * @var FormInterface
+     * @var FormInterface|null
      */
     private $parent;
 
@@ -99,7 +105,7 @@ class Form implements \IteratorAggregate, FormInterface
     /**
      * The button that was used to submit the form.
      *
-     * @var Button
+     * @var Button|null
      */
     private $clickedButton;
 
@@ -267,7 +273,7 @@ class Form implements \IteratorAggregate, FormInterface
             throw new AlreadySubmittedException('You cannot set the parent of a submitted form');
         }
 
-        if (null !== $parent && '' === $this->config->getName()) {
+        if ($parent && '' === $this->config->getName()) {
             throw new LogicException('A form with an empty name cannot have a parent form.');
         }
 
@@ -867,30 +873,7 @@ class Form implements \IteratorAggregate, FormInterface
         }
 
         if (!$this->config->getCompound()) {
-            throw new LogicException('You cannot add children to a simple form. Maybe you should set the option "compound" to true?');
-        }
-
-        // Obtain the view data
-        $viewData = null;
-
-        // If setData() is currently being called, there is no need to call
-        // mapDataToForms() here, as mapDataToForms() is called at the end
-        // of setData() anyway. Not doing this check leads to an endless
-        // recursion when initializing the form lazily and an event listener
-        // (such as ResizeFormListener) adds fields depending on the data:
-        //
-        //  * setData() is called, the form is not initialized yet
-        //  * add() is called by the listener (setData() is not complete, so
-        //    the form is still not initialized)
-        //  * getViewData() is called
-        //  * setData() is called since the form is not initialized yet
-        //  * ... endless recursion ...
-        //
-        // Also skip data mapping if setData() has not been called yet.
-        // setData() will be called upon form initialization and data mapping
-        // will take place by then.
-        if (!$this->lockSetData && $this->defaultDataSet && !$this->config->getInheritData()) {
-            $viewData = $this->getViewData();
+            throw new LogicException(sprintf('You cannot add children to the simple form named "%s" of type "%s". Maybe you should set its option "compound" to true?', $this->getName(), get_class($this->getConfig()->getType()->getInnerType())));
         }
 
         if (!$child instanceof FormInterface) {
@@ -926,10 +909,26 @@ class Form implements \IteratorAggregate, FormInterface
 
         $child->setParent($this);
 
+        // If setData() is currently being called, there is no need to call
+        // mapDataToForms() here, as mapDataToForms() is called at the end
+        // of setData() anyway. Not doing this check leads to an endless
+        // recursion when initializing the form lazily and an event listener
+        // (such as ResizeFormListener) adds fields depending on the data:
+        //
+        //  * setData() is called, the form is not initialized yet
+        //  * add() is called by the listener (setData() is not complete, so
+        //    the form is still not initialized)
+        //  * getViewData() is called
+        //  * setData() is called since the form is not initialized yet
+        //  * ... endless recursion ...
+        //
+        // Also skip data mapping if setData() has not been called yet.
+        // setData() will be called upon form initialization and data mapping
+        // will take place by then.
         if (!$this->lockSetData && $this->defaultDataSet && !$this->config->getInheritData()) {
             $iterator = new InheritDataAwareIterator(new \ArrayIterator(array($child->getName() => $child)));
             $iterator = new \RecursiveIteratorIterator($iterator);
-            $this->config->getDataMapper()->mapDataToForms($viewData, $iterator);
+            $this->config->getDataMapper()->mapDataToForms($this->viewData, $iterator);
         }
 
         return $this;

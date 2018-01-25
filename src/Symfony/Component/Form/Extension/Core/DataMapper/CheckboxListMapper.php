@@ -28,40 +28,39 @@ class CheckboxListMapper implements DataMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function mapDataToForms($choices, $checkboxes)
+    public function mapDataToForms($data, $forms)
     {
-        if (null === $choices) {
-            $choices = array();
+        if (null === $data) {
+            return;
         }
 
-        if (!is_array($choices)) {
-            throw new UnexpectedTypeException($choices, 'array');
+        if (!is_array($data)) {
+            throw new UnexpectedTypeException($data, 'array');
         }
 
-        foreach ($checkboxes as $checkbox) {
-            $value = $checkbox->getConfig()->getOption('value');
-            $checkbox->setData(in_array($value, $choices, true));
+        foreach ($forms as $checkbox) {
+            $checkbox->setData(in_array($checkbox->getConfig()->getOption('value'), $data, true));
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function mapFormsToData($checkboxes, &$choices)
+    public function mapFormsToData($forms, &$data)
     {
-        if (!is_array($choices)) {
-            throw new UnexpectedTypeException($choices, 'array');
+        if (!is_array($data)) {
+            throw new UnexpectedTypeException($data, 'array');
         }
 
         $values = array();
 
-        foreach ($checkboxes as $checkbox) {
+        foreach ($forms as $checkbox) {
             if ($checkbox->getData()) {
                 // construct an array of choice values
                 $values[] = $checkbox->getConfig()->getOption('value');
             }
         }
 
-        $choices = $values;
+        $data = $values;
     }
 }
