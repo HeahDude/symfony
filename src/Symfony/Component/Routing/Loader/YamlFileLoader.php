@@ -164,26 +164,39 @@ class YamlFileLoader extends FileLoader
             $imported = [$imported];
         }
 
-        foreach ($imported as $subCollection) {
-            /* @var $subCollection RouteCollection */
-            $subCollection->addPrefix($prefix);
-            if (null !== $host) {
-                $subCollection->setHost($host);
-            }
-            if (null !== $condition) {
-                $subCollection->setCondition($condition);
-            }
-            if (null !== $schemes) {
-                $subCollection->setSchemes($schemes);
-            }
-            if (null !== $methods) {
-                $subCollection->setMethods($methods);
-            }
-            $subCollection->addDefaults($defaults);
-            $subCollection->addRequirements($requirements);
-            $subCollection->addOptions($options);
+        $defaultRoute = new Route('', $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
 
-            $collection->addCollection($subCollection);
+        /* @var $subCollection RouteCollection */
+        foreach ($imported as $subCollection) {
+            $resolvedCollection = new RouteCollection();
+            foreach ($subCollection->getResources() as $resource) {
+                $resolvedCollection->addResource($resource);
+            }
+
+            foreach ($subCollection->all() as $name => $importedRoute) {
+                $route = clone $defaultRoute;
+                $route->setPath($prefix.$importedRoute->getPath());
+                $route->addDefaults($importedRoute->getDefaults());
+                $route->addRequirements($importedRoute->getRequirements());
+                $route->addOptions($importedRoute->getOptions());
+
+                if ($specificHost = $importedRoute->getHost()) {
+                    $route->setHost($specificHost);
+                }
+                if ($specificSchemes = $importedRoute->getSchemes()) {
+                    $route->setSchemes($specificSchemes);
+                }
+                if ($specificMethods = $importedRoute->getMethods()) {
+                    $route->setMethods($specificMethods);
+                }
+                if ($specificCondition = $importedRoute->getCondition()) {
+                    $route->setCondition($specificCondition);
+                }
+
+                $resolvedCollection->add($name, $route);
+            }
+
+            $collection->addCollection($resolvedCollection);
         }
     }
 

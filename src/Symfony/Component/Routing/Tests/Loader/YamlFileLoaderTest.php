@@ -221,14 +221,14 @@ class YamlFileLoaderTest extends TestCase
 
         $routeWithSpecifics = $routeCollection->get('route_with_specifics');
         $this->assertSame('/imported-with-specifics', $routeWithSpecifics->getPath());
-        //$this->assertSame('is_specific', $routeWithSpecifics->getDefault('global'));
+        $this->assertSame('is_specific', $routeWithSpecifics->getDefault('global'));
         $this->assertSame('test', $routeWithSpecifics->getDefault('specific'));
-        //$this->assertSame('should_be_specific', $routeWithSpecifics->getRequirement('global'));
+        $this->assertSame('should_be_specific', $routeWithSpecifics->getRequirement('global'));
         $this->assertSame('should_be_test', $routeWithSpecifics->getRequirement('specific'));
-        //$this->assertFalse($routeWithSpecifics->getOption('utf8'), 'Must have specific utf8 option');
-        //$this->assertSame('def', $routeWithSpecifics->getCondition());
-        //$this->assertSame('specific_host', $routeWithSpecifics->getHost());
-        //$this->assertSame(['http'], $routeWithSpecifics->getSchemes());
-        //$this->assertSame(['POST'], $routeWithSpecifics->getMethods());
+        $this->assertFalse($routeWithSpecifics->getOption('utf8'), 'Must have specific utf8 option');
+        $this->assertSame('def', $routeWithSpecifics->getCondition());
+        $this->assertSame('specific_host', $routeWithSpecifics->getHost());
+        $this->assertSame(['http'], $routeWithSpecifics->getSchemes());
+        $this->assertSame(['POST'], $routeWithSpecifics->getMethods());
     }
 }
