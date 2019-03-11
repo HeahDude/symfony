@@ -1,0 +1,17 @@
+route_with_globals:
+    path: /imported-with-globals
+
+route_with_specifics:
+    path: /imported-with-specifics
+    defaults:
+        global: is_specific
+        specific: test
+    requirements:
+        global: should_be_specific
+        specific: should_be_test
+    options:
+        utf8: false
+    condition: def
+    host: specific_host
+    schemes: http
+    methods: POST
