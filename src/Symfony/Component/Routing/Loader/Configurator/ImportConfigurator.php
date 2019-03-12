@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Routing\Loader\Configurator;
 
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
@@ -21,16 +22,43 @@ class ImportConfigurator
     use Traits\RouteTrait;
 
     private $parent;
+    private $imported;
 
-    public function __construct(RouteCollection $parent, RouteCollection $route)
+    public function __construct(RouteCollection $parent, RouteCollection $imported)
     {
         $this->parent = $parent;
-        $this->route = $route;
+        $this->imported = $imported;
+        $this->route = new Route('');
     }
 
     public function __destruct()
     {
-        $this->parent->addCollection($this->route);
+        $importedCollection = new RouteCollection();
+
+        foreach ($this->imported as $name => $imported) {
+            $route = clone $this->route;
+            $route->setPath($this->route->getPath().$imported->getPath());
+            $route->addDefaults($imported->getDefaults());
+            $route->addRequirements($imported->getRequirements());
+            $route->addOptions($imported->getOptions());
+
+            if ($specificHost = $imported->getHost()) {
+                $route->setHost($specificHost);
+            }
+            if ($specificSchemes = $imported->getSchemes()) {
+                $route->setSchemes($specificSchemes);
+            }
+            if ($specificMethods = $imported->getMethods()) {
+                $route->setMethods($specificMethods);
+            }
+            if ($specificCondition= $imported->getCondition()) {
+                $route->setCondition($specificCondition);
+            }
+
+            $importedCollection->add($name, $route);
+        }
+
+        $this->parent->addCollection($importedCollection);
     }
 
     /**
@@ -42,7 +70,7 @@ class ImportConfigurator
      */
     final public function prefix($prefix)
     {
-        $this->route->addPrefix($prefix);
+        $this->route->setPath($prefix);
 
         return $this;
     }

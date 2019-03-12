@@ -130,4 +130,32 @@ class PhpFileLoaderTest extends TestCase
         $route = $routeCollection->get('baz_route');
         $this->assertSame('AppBundle:Baz:view', $route->getDefault('_controller'));
     }
+
+    public function testRouteSpecificsOverrideDefaultsOnImport()
+    {
+        $loader = new PhpFileLoader(new FileLocator([__DIR__.'/../Fixtures/import']));
+        $routeCollection = $loader->load('importer.php');
+
+        $routeWithGlobals = $routeCollection->get('route_with_globals');
+        $this->assertSame('/imported-with-globals', $routeWithGlobals->getPath());
+        $this->assertSame('is_global', $routeWithGlobals->getDefault('global'));
+        $this->assertSame('should_be_global', $routeWithGlobals->getRequirement('global'));
+        $this->assertTrue($routeWithGlobals->getOption('utf8'), 'Must have global utf8 option');
+        $this->assertSame('abc', $routeWithGlobals->getCondition());
+        $this->assertSame('global_host', $routeWithGlobals->getHost());
+        $this->assertSame(['https'], $routeWithGlobals->getSchemes());
+        $this->assertSame(['GET'], $routeWithGlobals->getMethods());
+
+        $routeWithSpecifics = $routeCollection->get('route_with_specifics');
+        $this->assertSame('/imported-with-specifics', $routeWithSpecifics->getPath());
+        $this->assertSame('is_specific', $routeWithSpecifics->getDefault('global'));
+        $this->assertSame('test', $routeWithSpecifics->getDefault('specific'));
+        $this->assertSame('should_be_specific', $routeWithSpecifics->getRequirement('global'));
+        $this->assertSame('should_be_test', $routeWithSpecifics->getRequirement('specific'));
+        $this->assertFalse($routeWithSpecifics->getOption('utf8'), 'Must have specific utf8 option');
+        $this->assertSame('def', $routeWithSpecifics->getCondition());
+        $this->assertSame('specific_host', $routeWithSpecifics->getHost());
+        $this->assertSame(['http'], $routeWithSpecifics->getSchemes());
+        $this->assertSame(['POST'], $routeWithSpecifics->getMethods());
+    }
 }
