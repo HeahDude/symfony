@@ -13,6 +13,7 @@ namespace Symfony\Component\Security\Core\Authentication;
 
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 /**
@@ -81,5 +82,13 @@ class AuthenticationTrustResolver implements AuthenticationTrustResolverInterfac
         }
 
         return !$this->isAnonymous($token) && !$this->isRememberMe($token);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isImpersonator(TokenInterface $token = null): bool
+    {
+        return $token instanceof SwitchUserToken;
     }
 }
