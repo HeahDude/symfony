@@ -25,8 +25,10 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
  */
 class AuthenticatedVoter implements VoterInterface
 {
+    const IS_AUTHENTICATED = 'IS_AUTHENTICATED';
     const IS_AUTHENTICATED_FULLY = 'IS_AUTHENTICATED_FULLY';
     const IS_AUTHENTICATED_REMEMBERED = 'IS_AUTHENTICATED_REMEMBERED';
+    /** @deprecated since 4.3 */
     const IS_AUTHENTICATED_ANONYMOUSLY = 'IS_AUTHENTICATED_ANONYMOUSLY';
 
     private $authenticationTrustResolver;
@@ -45,6 +47,7 @@ class AuthenticatedVoter implements VoterInterface
         foreach ($attributes as $attribute) {
             if (null === $attribute || (self::IS_AUTHENTICATED_FULLY !== $attribute
                     && self::IS_AUTHENTICATED_REMEMBERED !== $attribute
+                    && self::IS_AUTHENTICATED !== $attribute
                     && self::IS_AUTHENTICATED_ANONYMOUSLY !== $attribute)) {
                 continue;
             }
@@ -62,10 +65,14 @@ class AuthenticatedVoter implements VoterInterface
                 return VoterInterface::ACCESS_GRANTED;
             }
 
-            if (self::IS_AUTHENTICATED_ANONYMOUSLY === $attribute
+            if ((($bc = self::IS_AUTHENTICATED_ANONYMOUSLY === $attribute) || self::IS_AUTHENTICATED === $attribute)
                 && ($this->authenticationTrustResolver->isAnonymous($token)
                     || $this->authenticationTrustResolver->isRememberMe($token)
                     || $this->authenticationTrustResolver->isFullFledged($token))) {
+                if ($bc) {
+                    @trigger_error(sprintf('Using "%s" is deprecated since version 4.3 and will be removed in 5.0. Use "%s" instead.', self::IS_AUTHENTICATED_ANONYMOUSLY, self::IS_AUTHENTICATED), E_USER_DEPRECATED);
+                }
+
                 return VoterInterface::ACCESS_GRANTED;
             }
         }

@@ -20,6 +20,8 @@ CHANGELOG
  * Dispatch `AuthenticationFailureEvent` on `security.authentication.failure`
  * Dispatch `InteractiveLoginEvent` on `security.interactive_login`
  * Dispatch `SwitchUserEvent` on `security.switch_user`
+ * Deprecated `IS_AUTHENTICATED_ANONYMOUSLY` in favor of `IS_AUTHENTICATED`
+ 
 
 4.2.0
 -----

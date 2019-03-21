@@ -38,9 +38,9 @@ class AuthenticatedVoterTest extends TestCase
             ['anonymously', [], VoterInterface::ACCESS_ABSTAIN],
             ['anonymously', ['FOO'], VoterInterface::ACCESS_ABSTAIN],
 
-            ['fully', ['IS_AUTHENTICATED_ANONYMOUSLY'], VoterInterface::ACCESS_GRANTED],
-            ['remembered', ['IS_AUTHENTICATED_ANONYMOUSLY'], VoterInterface::ACCESS_GRANTED],
-            ['anonymously', ['IS_AUTHENTICATED_ANONYMOUSLY'], VoterInterface::ACCESS_GRANTED],
+            ['fully', ['IS_AUTHENTICATED'], VoterInterface::ACCESS_GRANTED],
+            ['remembered', ['IS_AUTHENTICATED'], VoterInterface::ACCESS_GRANTED],
+            ['anonymously', ['IS_AUTHENTICATED'], VoterInterface::ACCESS_GRANTED],
 
             ['fully', ['IS_AUTHENTICATED_REMEMBERED'], VoterInterface::ACCESS_GRANTED],
             ['remembered', ['IS_AUTHENTICATED_REMEMBERED'], VoterInterface::ACCESS_GRANTED],
@@ -49,6 +49,26 @@ class AuthenticatedVoterTest extends TestCase
             ['fully', ['IS_AUTHENTICATED_FULLY'], VoterInterface::ACCESS_GRANTED],
             ['remembered', ['IS_AUTHENTICATED_FULLY'], VoterInterface::ACCESS_DENIED],
             ['anonymously', ['IS_AUTHENTICATED_FULLY'], VoterInterface::ACCESS_DENIED],
+        ];
+    }
+
+    /**
+     * @legacy
+     * @dataProvider getLegacyVoteTests
+     */
+    public function testVoteIsAuthenticatedAnonymously($authenticated, $attributes, $expected)
+    {
+        $voter = new AuthenticatedVoter(new AuthenticationTrustResolver());
+
+        $this->assertSame($expected, $voter->vote($this->getToken($authenticated), null, $attributes));
+    }
+
+    public function getLegacyVoteTests()
+    {
+        return [
+            ['fully', ['IS_AUTHENTICATED_ANONYMOUSLY'], VoterInterface::ACCESS_GRANTED],
+            ['remembered', ['IS_AUTHENTICATED_ANONYMOUSLY'], VoterInterface::ACCESS_GRANTED],
+            ['anonymously', ['IS_AUTHENTICATED_ANONYMOUSLY'], VoterInterface::ACCESS_GRANTED],
         ];
     }
 
