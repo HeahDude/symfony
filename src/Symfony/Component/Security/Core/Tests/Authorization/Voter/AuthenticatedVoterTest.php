@@ -49,6 +49,10 @@ class AuthenticatedVoterTest extends TestCase
             ['fully', ['IS_AUTHENTICATED_FULLY'], VoterInterface::ACCESS_GRANTED],
             ['remembered', ['IS_AUTHENTICATED_FULLY'], VoterInterface::ACCESS_DENIED],
             ['anonymously', ['IS_AUTHENTICATED_FULLY'], VoterInterface::ACCESS_DENIED],
+
+            ['fully', ['IS_ANONYMOUS'], VoterInterface::ACCESS_DENIED],
+            ['remembered', ['IS_ANONYMOUS'], VoterInterface::ACCESS_DENIED],
+            ['anonymously', ['IS_ANONYMOUS'], VoterInterface::ACCESS_GRANTED],
         ];
     }
 

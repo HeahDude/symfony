@@ -21,6 +21,7 @@ CHANGELOG
  * Dispatch `InteractiveLoginEvent` on `security.interactive_login`
  * Dispatch `SwitchUserEvent` on `security.switch_user`
  * Deprecated `IS_AUTHENTICATED_ANONYMOUSLY` in favor of `IS_AUTHENTICATED`
+ * Added `IS_ANONYMOUS`
  
 
 4.2.0
