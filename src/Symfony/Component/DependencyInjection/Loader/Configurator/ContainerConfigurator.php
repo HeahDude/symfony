@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
@@ -20,6 +21,7 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -42,6 +44,8 @@ class ContainerConfigurator extends AbstractConfigurator
         $this->instanceof = &$instanceof;
         $this->path = $path;
         $this->file = $file;
+
+        __helper::__init($this);
     }
 
     final public function extension(string $namespace, array $config)
@@ -74,6 +78,49 @@ class ContainerConfigurator extends AbstractConfigurator
     final public function services(): ServicesConfigurator
     {
         return new ServicesConfigurator($this->container, $this->loader, $this->instanceof, $this->path, $this->anonymousCount);
+    }
+
+    protected function yamlFile(string $filepath): array
+    {
+        if (!\class_exists(Yaml::class)) {
+            throw new \InvalidArgumentException('You need to install the YAML component to parse YAML files.');
+        }
+
+        if (!\is_file($filepath = static::processValue($filepath))) {
+            $rootDir = \dirname($this->file);
+
+            if (!\is_file($filepath = "$rootDir/$filepath")) {
+                throw new InvalidArgumentException("Unable to locate file \"{$filepath}\". Please provide a path relative to \"$rootDir\" or an absolute path.");
+            }
+        }
+
+        $this->container->addResource(new FileResource($filepath));
+
+        return static::processValue(Yaml::parseFile($filepath, Yaml::PARSE_CONSTANT));
+    }
+}
+
+/**
+ * A class to call protected method from the configurator outside the class definition.
+ *
+ * @internal
+ */
+class __helper extends ContainerConfigurator
+{
+    private static $configurator;
+
+    public static function __init(ContainerConfigurator $configurator)
+    {
+        self::$configurator = $configurator;
+    }
+
+    public static function call(string $method, ...$args)
+    {
+        if (0 !== strpos(debug_backtrace(2, 1)[0]['class'], __NAMESPACE__)) {
+            throw new \BadFunctionCallException(sprintf('The "%s" class is internal.', __CLASS__));
+        }
+
+        return call_user_func([self::$configurator, $method], ...$args);
     }
 }
 
@@ -135,4 +182,9 @@ function tagged_locator(string $tag, string $indexAttribute, string $defaultInde
 function expr(string $expression): Expression
 {
     return new Expression($expression);
+}
+
+function yamlFile(string $filepath): array
+{
+    return __helper::call('yamlFile', $filepath);
 }
