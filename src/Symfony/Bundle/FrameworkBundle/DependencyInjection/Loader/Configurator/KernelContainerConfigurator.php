@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator;
 
+use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -83,6 +84,15 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return new ValidationSectionConfigurator($this->framework());
+    }
+
+    final public function annotations(): AnnotationsSectionConfigurator
+    {
+        if (!class_exists(Annotation::class)) {
+            throw new \LogicException('The "annotations" section is not configurable. Are you sure to use the required dependencies? Try "composer require sensio/framework-extra-bundle".');
+        }
+
+        return new AnnotationsSectionConfigurator($this->framework());
     }
 
     final public function twig(): TwigExtensionConfigurator
