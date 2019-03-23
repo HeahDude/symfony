@@ -15,6 +15,7 @@ use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Loader\DelegatingLoader;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -759,8 +760,19 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
      */
     protected function getContainerLoader(ContainerInterface $container)
     {
-        $locator = new FileLocator($this);
-        $resolver = new LoaderResolver([
+        return new DelegatingLoader(
+            new LoaderResolver($this->getContainerLoaders($container, new FileLocator($this)))
+        );
+    }
+
+    /**
+     * Returns the inner delegated loaders for the container.
+     *
+     * @return LoaderInterface[] The loaders
+     */
+    protected function getContainerLoaders(ContainerInterface $container, FileLocator $locator): array
+    {
+        return [
             new XmlFileLoader($container, $locator),
             new YamlFileLoader($container, $locator),
             new IniFileLoader($container, $locator),
@@ -768,9 +780,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             new GlobFileLoader($container, $locator),
             new DirectoryLoader($container, $locator),
             new ClosureLoader($container),
-        ]);
-
-        return new DelegatingLoader($resolver);
+        ];
     }
 
     /**
