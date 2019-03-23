@@ -135,6 +135,12 @@ class KernelContainerConfigurator extends ContainerConfigurator
         return new PhpErrorsSectionConfigurator($this->framework());
     }
 
+
+    final public function lock(bool $enable = true): LockSectionConfigurator
+    {
+        return (new LockSectionConfigurator($this->framework()))->enable($enable);
+    }
+
     final public function twig(): TwigExtensionConfigurator
     {
         if (!class_exists(TwigExtensionConfigurator::class)) {
