@@ -20,6 +20,7 @@ use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\WebLink\HttpHeaderSerializer;
 use Symfony\Component\Workflow\Workflow;
 
 class KernelContainerConfigurator extends ContainerConfigurator
@@ -135,10 +136,18 @@ class KernelContainerConfigurator extends ContainerConfigurator
         return new PhpErrorsSectionConfigurator($this->framework());
     }
 
-
     final public function lock(bool $enable = true): LockSectionConfigurator
     {
         return (new LockSectionConfigurator($this->framework()))->enable($enable);
+    }
+
+    final public function webLink($enable = true): FrameworkExtensionConfigurator
+    {
+        if (!class_exists(HttpHeaderSerializer::class)) {
+            throw new \LogicException('The "web_link" section is not configurable. Are you sure to use the WebLink component? Try "composer require symfony/web-link".');
+        }
+
+        return $this->extension('web_link', ['enabled' => $enable]);
     }
 
     final public function twig(): TwigExtensionConfigurator
