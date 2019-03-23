@@ -16,6 +16,7 @@ use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtens
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Validator\Validation;
@@ -113,6 +114,20 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return new PropertyAccessSectionConfigurator($this->framework());
+    }
+
+    final public function propertyInfo($enable = true): FrameworkExtensionConfigurator
+    {
+        if (!class_exists(PropertyInfoExtractorInterface::class)) {
+            throw new \LogicException('The "property_info" section is not configurable. Are you sure to use the PropertyAccess component? Try "composer require symfony/property-info".');
+        }
+
+        return $this->extension('property_info', ['enabled' => $enable]);
+    }
+
+    final public function cache(): CacheSectionConfigurator
+    {
+        return new CacheSectionConfigurator($this->framework());
     }
 
     final public function twig(): TwigExtensionConfigurator

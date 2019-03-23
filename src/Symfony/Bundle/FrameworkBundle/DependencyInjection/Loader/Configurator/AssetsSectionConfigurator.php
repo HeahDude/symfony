@@ -27,9 +27,16 @@ class AssetsSectionConfigurator extends AbstractExtensionSectionConfigurator
 
     final public function __construct(AbstractExtensionConfigurator $extension, string $packageName = null)
     {
-        $this->package = $packageName;
-
         parent::__construct($extension);
+
+        $this->package = $packageName;
+    }
+
+    public function __destruct()
+    {
+        $this->set('packages', $this->packages);
+
+        parent::__destruct();
     }
 
     final public function versionStrategy(string $strategy)
