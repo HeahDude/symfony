@@ -15,6 +15,7 @@ use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Workflow\Workflow;
@@ -90,6 +91,15 @@ class KernelContainerConfigurator extends ContainerConfigurator
     {
         if (!class_exists(Annotation::class)) {
             throw new \LogicException('The "annotations" section is not configurable. Are you sure to use the required dependencies? Try "composer require sensio/framework-extra-bundle".');
+        }
+
+        return new AnnotationsSectionConfigurator($this->framework());
+    }
+
+    final public function serializer(): AnnotationsSectionConfigurator
+    {
+        if (!class_exists(Serializer::class)) {
+            throw new \LogicException('The "serializer" section is not configurable. Are you sure to use the Serializer component? Try "composer require symfony/serializer".');
         }
 
         return new AnnotationsSectionConfigurator($this->framework());

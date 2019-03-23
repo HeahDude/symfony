@@ -15,17 +15,14 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionS
 
 final class ValidationSectionConfigurator extends AbstractExtensionSectionConfigurator
 {
+    use Traits\AnnotationTrait;
+
     public const NAMESPACE = 'framework';
     public const SECTION = 'validation';
 
     public function cache(string $adapter)
     {
         return $this->set('cache', $adapter);
-    }
-
-    public function enableAnnotations(bool $enable = true)
-    {
-        return $this->set('enable_annotations', $enable);
     }
 
     /**
@@ -56,10 +53,5 @@ final class ValidationSectionConfigurator extends AbstractExtensionSectionConfig
     public function emailValidationMode(string $mode)
     {
         return $this->set('email_validation_mode', $mode);
-    }
-
-    public function mappingPaths(array $paths)
-    {
-        return $this->set('mapping', ['paths' => $paths]);
     }
 }
