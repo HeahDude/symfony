@@ -14,6 +14,7 @@ namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\Translation\Translator;
 use Symfony\Component\Workflow\Workflow;
 
 class KernelContainerConfigurator extends ContainerConfigurator
@@ -63,6 +64,15 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return new AssetsSectionConfigurator($this->framework());
+    }
+
+    final public function translator(): TranslatorSectionConfigurator
+    {
+        if (!class_exists(Translator::class)) {
+            throw new \LogicException('The "translator" section is not configurable. Are you sure to use the Translation component? Try "composer require symfony/translation".');
+        }
+
+        return new TranslatorSectionConfigurator($this->framework());
     }
 
     final public function twig(): TwigExtensionConfigurator
