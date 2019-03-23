@@ -15,6 +15,7 @@ use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Validator\Validation;
@@ -103,6 +104,15 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return new AnnotationsSectionConfigurator($this->framework());
+    }
+
+    final public function propertyAccess(): PropertyAccessSectionConfigurator
+    {
+        if (!class_exists(PropertyAccess::class)) {
+            throw new \LogicException('The "property_access" section is not configurable. Are you sure to use the PropertyAccess component? Try "composer require symfony/property-access".');
+        }
+
+        return new PropertyAccessSectionConfigurator($this->framework());
     }
 
     final public function twig(): TwigExtensionConfigurator
