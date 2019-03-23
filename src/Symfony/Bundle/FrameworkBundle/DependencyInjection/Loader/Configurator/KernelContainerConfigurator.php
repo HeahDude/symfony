@@ -62,49 +62,49 @@ class KernelContainerConfigurator extends ContainerConfigurator
         return new WorkflowSectionConfigurator($this->framework(), $name);
     }
 
-    final public function assets(): AssetsSectionConfigurator
+    final public function assets(bool $enable = true): AssetsSectionConfigurator
     {
         if (!class_exists(Package::class)) {
             throw new \LogicException('The "assets" section is not configurable. Are you sure to use the Assets component? Try "composer require symfony/assets".');
         }
 
-        return new AssetsSectionConfigurator($this->framework());
+        return (new AssetsSectionConfigurator($this->framework()))->enable($enable);
     }
 
-    final public function translation(): TranslatorSectionConfigurator
+    final public function translation(bool $enable = true): TranslatorSectionConfigurator
     {
         if (!class_exists(Translator::class)) {
             throw new \LogicException('The "translator" section is not configurable. Are you sure to use the Translation component? Try "composer require symfony/translation".');
         }
 
-        return new TranslatorSectionConfigurator($this->framework());
+        return (new TranslatorSectionConfigurator($this->framework()))->enable($enable);
     }
 
-    final public function validation(): ValidationSectionConfigurator
+    final public function validation(bool $enable = true): ValidationSectionConfigurator
     {
         if (!class_exists(Validation::class)) {
             throw new \LogicException('The "validation" section is not configurable. Are you sure to use the Validator component? Try "composer require symfony/validator".');
         }
 
-        return new ValidationSectionConfigurator($this->framework());
+        return (new ValidationSectionConfigurator($this->framework()))->enable($enable);
     }
 
-    final public function annotations(): AnnotationsSectionConfigurator
+    final public function annotations(bool $enable = true): AnnotationsSectionConfigurator
     {
         if (!class_exists(Annotation::class)) {
             throw new \LogicException('The "annotations" section is not configurable. Are you sure to use the required dependencies? Try "composer require sensio/framework-extra-bundle".');
         }
 
-        return new AnnotationsSectionConfigurator($this->framework());
+        return (new AnnotationsSectionConfigurator($this->framework()))->enable($enable);
     }
 
-    final public function serializer(): AnnotationsSectionConfigurator
+    final public function serializer(bool $enable = true): AnnotationsSectionConfigurator
     {
         if (!class_exists(Serializer::class)) {
             throw new \LogicException('The "serializer" section is not configurable. Are you sure to use the Serializer component? Try "composer require symfony/serializer".');
         }
 
-        return new AnnotationsSectionConfigurator($this->framework());
+        return (new AnnotationsSectionConfigurator($this->framework()))->enable($enable);
     }
 
     final public function propertyAccess(): PropertyAccessSectionConfigurator

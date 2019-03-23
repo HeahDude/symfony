@@ -12,9 +12,12 @@
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator;
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionSectionConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\Traits\CanBeEnabledTrait;
 
 final class AnnotationsSectionConfigurator extends AbstractExtensionSectionConfigurator
 {
+    use CanBeEnabledTrait;
+
     public const NAMESPACE = 'framework';
     public const SECTION = 'annotations';
 

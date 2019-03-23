@@ -12,9 +12,12 @@
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator;
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\Traits\CanBeEnabledTrait;
 
 final class FrameworkExtensionConfigurator extends AbstractExtensionConfigurator
 {
+    use CanBeEnabledTrait;
+
     public const NAMESPACE = 'framework';
 
     /**
@@ -24,42 +27,42 @@ final class FrameworkExtensionConfigurator extends AbstractExtensionConfigurator
      */
     public function secret(string $secret)
     {
-        return self::set('secret', $secret);
+        return $this->set('secret', $secret);
     }
 
     public function ide(string $ide)
     {
-        return self::set('ide', $ide);
+        return $this->set('ide', $ide);
     }
 
     public function test(bool $test = true)
     {
-        return self::set('test', $test);
+        return $this->set('test', $test);
     }
 
     public function defaultLocale(string $locale)
     {
-        return self::set('default_locale', $locale);
+        return $this->set('default_locale', $locale);
     }
 
     public function httpMethodOverride(bool $override = true)
     {
-        return self::set('http_method_override', $override);
+        return $this->set('http_method_override', $override);
     }
 
     public function trustedHosts(array $trusted)
     {
-        return self::set('trusted_hosts', $trusted);
+        return $this->set('trusted_hosts', $trusted);
     }
 
     public function esi(bool $enabled = true)
     {
-        return self::enable('esi', $enabled);
+        return $this->enable($enabled, 'esi');
     }
 
     public function ssi(bool $enabled = true)
     {
-        return self::enable('ssi', $enabled);
+        return $this->enable($enabled, 'ssi');
     }
 
     public function fragment(bool $enabled = true, string $path = null)
@@ -69,17 +72,17 @@ final class FrameworkExtensionConfigurator extends AbstractExtensionConfigurator
             $fragment['path'] = $path;
         }
 
-        return self::set('fragment', $fragment);
+        return $this->set('fragment', $fragment);
     }
 
     public function csrf(bool $enabled = true)
     {
-        return self::enable('csrf', $enabled);
+        return $this->enable($enabled, 'csrf');
     }
 
     public function form(bool $enabled = true, bool $csrfProtection = true, string $csrfFieldName = '_token')
     {
-        return self::set('form', [
+        return $this->set('form', [
             'enabled' => $enabled,
             'csrf_protection' => [
                 'enabled' => $csrfProtection,
@@ -96,6 +99,6 @@ final class FrameworkExtensionConfigurator extends AbstractExtensionConfigurator
      */
     public function request(bool $enabled = true, array $formats = [])
     {
-        return self::set('request', ['enabled' => $enabled, 'formats' => $formats]);
+        return $this->set('request', ['enabled' => $enabled, 'formats' => $formats]);
     }
 }

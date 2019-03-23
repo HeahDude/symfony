@@ -45,16 +45,4 @@ abstract class AbstractExtensionConfigurator
 
         return $this;
     }
-
-    /**
-     * Enables/disables a configuration section for an extension.
-     *
-     * @return $this
-     */
-    final protected function enable(string $key, bool $enable)
-    {
-        $this->config[$key]['enabled'] = $enable;
-
-        return $this;
-    }
 }
