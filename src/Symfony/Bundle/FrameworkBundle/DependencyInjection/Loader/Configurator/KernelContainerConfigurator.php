@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator;
 
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
+use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Workflow\Workflow;
 
@@ -53,6 +54,15 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return new WorkflowSectionConfigurator($this->framework(), $name);
+    }
+
+    final public function assets(): AssetsSectionConfigurator
+    {
+        if (!class_exists(Package::class)) {
+            throw new \LogicException('The "assets" section is not configurable. Are you sure to use the Assets component? Try "composer require symfony/assets".');
+        }
+
+        return new AssetsSectionConfigurator($this->framework());
     }
 
     final public function twig(): TwigExtensionConfigurator

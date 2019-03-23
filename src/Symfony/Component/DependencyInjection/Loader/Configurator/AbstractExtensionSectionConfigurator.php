@@ -15,7 +15,7 @@ abstract class AbstractExtensionSectionConfigurator extends AbstractExtensionCon
 {
     public const SECTION = 'abstract';
 
-    private $extension;
+    protected $extension;
 
     public function __construct(AbstractExtensionConfigurator $extension)
     {
