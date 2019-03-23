@@ -15,6 +15,7 @@ use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtens
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Translation\Translator;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Workflow\Workflow;
 
 class KernelContainerConfigurator extends ContainerConfigurator
@@ -66,13 +67,22 @@ class KernelContainerConfigurator extends ContainerConfigurator
         return new AssetsSectionConfigurator($this->framework());
     }
 
-    final public function translator(): TranslatorSectionConfigurator
+    final public function translation(): TranslatorSectionConfigurator
     {
         if (!class_exists(Translator::class)) {
             throw new \LogicException('The "translator" section is not configurable. Are you sure to use the Translation component? Try "composer require symfony/translation".');
         }
 
         return new TranslatorSectionConfigurator($this->framework());
+    }
+
+    final public function validation(): ValidationSectionConfigurator
+    {
+        if (!class_exists(Validation::class)) {
+            throw new \LogicException('The "validation" section is not configurable. Are you sure to use the Validator component? Try "composer require symfony/validator".');
+        }
+
+        return new ValidationSectionConfigurator($this->framework());
     }
 
     final public function twig(): TwigExtensionConfigurator
