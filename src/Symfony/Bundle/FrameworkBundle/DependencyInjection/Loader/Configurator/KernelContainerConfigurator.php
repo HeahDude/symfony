@@ -130,6 +130,11 @@ class KernelContainerConfigurator extends ContainerConfigurator
         return new CacheSectionConfigurator($this->framework());
     }
 
+    final public function phpErrors(): PhpErrorsSectionConfigurator
+    {
+        return new PhpErrorsSectionConfigurator($this->framework());
+    }
+
     final public function twig(): TwigExtensionConfigurator
     {
         if (!class_exists(TwigExtensionConfigurator::class)) {
