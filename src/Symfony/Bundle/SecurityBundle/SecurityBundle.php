@@ -15,6 +15,7 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\Compiler\AddExpressionLang
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Compiler\AddSecurityVotersPass;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Compiler\AddSessionDomainConstraintPass;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Compiler\RegisterCsrfTokenClearingLogoutHandlerPass;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\Loader\Configurator\SecurityExtensionConfigurator;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FormLoginFactory;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\FormLoginLdapFactory;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\GuardAuthenticationFactory;
@@ -31,6 +32,7 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\InMe
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\LdapFactory;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -64,5 +66,10 @@ class SecurityBundle extends Bundle
         $container->addCompilerPass(new AddSecurityVotersPass());
         $container->addCompilerPass(new AddSessionDomainConstraintPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new RegisterCsrfTokenClearingLogoutHandlerPass());
+    }
+
+    public static function getExtensionConfigurator(ContainerConfigurator $containerConfigurator)
+    {
+        return new SecurityExtensionConfigurator($containerConfigurator);
     }
 }

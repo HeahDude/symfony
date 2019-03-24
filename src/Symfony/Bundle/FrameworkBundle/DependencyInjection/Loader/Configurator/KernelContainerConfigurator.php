@@ -14,6 +14,8 @@ namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator
 use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\DebugBundle\DependencyInjection\Loader\Configurator\DebugExtensionConfigurator;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\Loader\Configurator\SecurityExtensionConfigurator;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Asset\Package;
@@ -188,6 +190,18 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return DebugBundle::getExtensionConfigurator($this);
+    }
+
+    final public function security(): SecurityExtensionConfigurator
+    {
+        if (!class_exists(SecurityBundle::class)) {
+            throw new \LogicException('The "security" extension is not configurable. Are you sure to use the SecurityBundle? Try "composer require symfony/security-bundle".');
+        }
+        if (!method_exists(SecurityBundle::class, 'getExtensionConfigurator')) {
+            throw new \LogicException('The "security" extension is not configurable using fluent methods. Try upgrading "composer update symfony/security-bundle".');
+        }
+
+        return SecurityBundle::getExtensionConfigurator($this);
     }
 
     final public function twig(): TwigExtensionConfigurator
