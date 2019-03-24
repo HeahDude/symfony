@@ -16,6 +16,8 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 /**
  * An implementation of BundleInterface that adds a few conventions
@@ -166,5 +168,13 @@ abstract class Bundle implements BundleInterface
         if (null === $this->name) {
             $this->name = false === $pos ? static::class : substr(static::class, $pos + 1);
         }
+    }
+
+    /**
+     * @return AbstractExtensionConfigurator|null
+     */
+    public static function getExtensionConfigurator(ContainerConfigurator $containerConfigurator)
+    {
+        return null;
     }
 }

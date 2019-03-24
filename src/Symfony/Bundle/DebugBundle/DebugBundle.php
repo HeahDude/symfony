@@ -12,8 +12,10 @@
 namespace Symfony\Bundle\DebugBundle;
 
 use Symfony\Bundle\DebugBundle\DependencyInjection\Compiler\DumpDataCollectorPass;
+use Symfony\Bundle\DebugBundle\DependencyInjection\Loader\Configurator\DebugExtensionConfigurator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\VarDumper\VarDumper;
 
@@ -57,5 +59,13 @@ class DebugBundle extends Bundle
     public function registerCommands(Application $application)
     {
         // noop
+    }
+
+    /**
+     * @return DebugExtensionConfigurator
+     */
+    public static function getExtensionConfigurator(ContainerConfigurator $containerConfigurator)
+    {
+        return new DebugExtensionConfigurator($containerConfigurator);
     }
 }

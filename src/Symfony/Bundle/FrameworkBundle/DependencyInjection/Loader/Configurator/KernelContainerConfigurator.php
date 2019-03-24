@@ -12,8 +12,11 @@
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Common\Annotations\Annotation;
+use Symfony\Bundle\DebugBundle\DebugBundle;
+use Symfony\Bundle\DebugBundle\DependencyInjection\Loader\Configurator\DebugExtensionConfigurator;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
+use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Lock\Lock;
@@ -172,6 +175,18 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return (new HttpClientSectionConfigurator($this->framework()))->enable($enable);
+    }
+
+    final public function debug(): DebugExtensionConfigurator
+    {
+        if (!class_exists(Debug::class)) {
+            throw new \LogicException('The "debug" extension is not configurable. Are you sure to use the DebugBundle? Try "composer require symfony/debug-bundle".');
+        }
+        if (!method_exists(DebugBundle::class, 'getExtensionConfigurator')) {
+            throw new \LogicException('The "debug" extension is not configurable using fluent methods. Try upgrading "composer update symfony/debug-bundle".');
+        }
+
+        return DebugBundle::getExtensionConfigurator($this);
     }
 
     final public function twig(): TwigExtensionConfigurator
