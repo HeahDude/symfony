@@ -101,4 +101,9 @@ final class FrameworkExtensionConfigurator extends AbstractExtensionConfigurator
     {
         return $this->set('request', ['enabled' => $enabled, 'formats' => $formats]);
     }
+
+    public function disallowSearchEngineIndex(bool $disallow = true)
+    {
+        return $this->set('disallow_search_engine_index', $disallow);
+    }
 }
