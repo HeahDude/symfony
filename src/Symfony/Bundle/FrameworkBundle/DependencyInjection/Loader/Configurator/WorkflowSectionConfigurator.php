@@ -13,10 +13,13 @@ namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionSectionConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\Traits\CanBeEnabledTrait;
 use Symfony\Component\Workflow\MarkingStore\MethodMarkingStore;
 
 final class WorkflowSectionConfigurator extends AbstractExtensionSectionConfigurator
 {
+    use CanBeEnabledTrait;
+
     public const NAMESPACE = 'framework';
     public const SECTION = 'workflows';
 
@@ -55,7 +58,7 @@ final class WorkflowSectionConfigurator extends AbstractExtensionSectionConfigur
 
     public function auditTrail(bool $enable = true)
     {
-        return $this->enable('audit_trail', $enable);
+        return $this->enable($enable, 'audit_trail');
     }
 
     public function markingStoreProperty(string $property)

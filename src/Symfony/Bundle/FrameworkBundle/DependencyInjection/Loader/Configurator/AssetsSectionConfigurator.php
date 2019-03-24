@@ -77,7 +77,7 @@ class AssetsSectionConfigurator extends AbstractExtensionSectionConfigurator
         return $this->set('base_urls', $urls);
     }
 
-    final public function package(string $name)
+    final public function package(string $name): self
     {
         if ($this->package) {
             // allow chaining
