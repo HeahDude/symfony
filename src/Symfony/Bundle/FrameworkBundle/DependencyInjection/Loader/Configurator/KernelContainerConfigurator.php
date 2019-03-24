@@ -15,6 +15,8 @@ use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\Lock\Lock;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\Serializer\Serializer;
@@ -119,7 +121,7 @@ class KernelContainerConfigurator extends ContainerConfigurator
 
     final public function propertyInfo($enable = true): FrameworkExtensionConfigurator
     {
-        if (!class_exists(PropertyInfoExtractorInterface::class)) {
+        if (!interface_exists(PropertyInfoExtractorInterface::class)) {
             throw new \LogicException('The "property_info" section is not configurable. Are you sure to use the PropertyAccess component? Try "composer require symfony/property-info".');
         }
 
@@ -138,6 +140,10 @@ class KernelContainerConfigurator extends ContainerConfigurator
 
     final public function lock(bool $enable = true): LockSectionConfigurator
     {
+        if (!class_exists(Lock::class)) {
+            throw new \LogicException('The "lock" section is not configurable. Are you sure to use the Lock component? Try "composer require symfony/lock".');
+        }
+
         return (new LockSectionConfigurator($this->framework()))->enable($enable);
     }
 
@@ -148,6 +154,15 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return $this->extension('web_link', ['enabled' => $enable]);
+    }
+
+    final public function messenger($enable = true): MessengerSectionConfigurator
+    {
+        if (!interface_exists(MessageBusInterface::class)) {
+            throw new \LogicException('The "messenger" section is not configurable. Are you sure to use the Messenger component? Try "composer require symfony/messenger".');
+        }
+
+        return (new MessengerSectionConfigurator($this->framework()))->enable($enable);
     }
 
     final public function twig(): TwigExtensionConfigurator
