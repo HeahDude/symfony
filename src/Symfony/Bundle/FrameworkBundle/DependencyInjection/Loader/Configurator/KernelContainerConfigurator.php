@@ -106,13 +106,13 @@ class KernelContainerConfigurator extends ContainerConfigurator
         return (new AnnotationsSectionConfigurator($this->framework()))->enable($enable);
     }
 
-    final public function serializer(bool $enable = true): AnnotationsSectionConfigurator
+    final public function serializer(bool $enable = true): SerializerSectionConfigurator
     {
         if (!class_exists(Serializer::class)) {
             throw new \LogicException('The "serializer" section is not configurable. Are you sure to use the Serializer component? Try "composer require symfony/serializer".');
         }
 
-        return (new AnnotationsSectionConfigurator($this->framework()))->enable($enable);
+        return (new SerializerSectionConfigurator($this->framework()))->enable($enable);
     }
 
     final public function propertyAccess(): PropertyAccessSectionConfigurator
