@@ -11,7 +11,6 @@
 
 namespace Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator;
 
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Loader\Configurator\Traits\MessengerSubSectionTrait;
 use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\AbstractExtensionSectionConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\Traits\CanBeEnabledTrait;
@@ -118,7 +117,7 @@ class MessengerSectionConfigurator extends AbstractExtensionSectionConfigurator
  */
 class TransportSectionConfigurator extends MessengerSectionConfigurator
 {
-    use MessengerSubSectionTrait;
+    use Traits\MessengerSubSectionTrait;
 
     private $name;
     private $transports;
@@ -178,7 +177,7 @@ class TransportSectionConfigurator extends MessengerSectionConfigurator
  */
 class BusSectionConfigurator extends MessengerSectionConfigurator
 {
-    use MessengerSubSectionTrait;
+    use Traits\MessengerSubSectionTrait;
 
     private $name;
     private $buses;

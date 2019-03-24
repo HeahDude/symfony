@@ -15,6 +15,7 @@ use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Lock\Lock;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -163,6 +164,14 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return (new MessengerSectionConfigurator($this->framework()))->enable($enable);
+    }
+    final public function httpClient($enable = true): HttpClientSectionConfigurator
+    {
+        if (!interface_exists(HttpClient::class)) {
+            throw new \LogicException('The "http_client" section is not configurable. Are you sure to use the HttpClient component? Try "composer require symfony/http-client".');
+        }
+
+        return (new HttpClientSectionConfigurator($this->framework()))->enable($enable);
     }
 
     final public function twig(): TwigExtensionConfigurator
