@@ -16,9 +16,11 @@ use Symfony\Bundle\TwigBundle\DependencyInjection\Compiler\ExtensionPass;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Compiler\RuntimeLoaderPass;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Compiler\TwigEnvironmentPass;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Compiler\TwigLoaderPass;
+use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -42,5 +44,13 @@ class TwigBundle extends Bundle
     public function registerCommands(Application $application)
     {
         // noop
+    }
+
+    /**
+     * @return TwigExtensionConfigurator
+     */
+    public static function getExtensionConfigurator(ContainerConfigurator $containerConfigurator)
+    {
+        return new TwigExtensionConfigurator($containerConfigurator);
     }
 }

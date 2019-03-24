@@ -15,6 +15,7 @@ use Doctrine\Common\Annotations\Annotation;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\DebugBundle\DependencyInjection\Loader\Configurator\DebugExtensionConfigurator;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -191,10 +192,13 @@ class KernelContainerConfigurator extends ContainerConfigurator
 
     final public function twig(): TwigExtensionConfigurator
     {
-        if (!class_exists(TwigExtensionConfigurator::class)) {
+        if (!class_exists(TwigBundle::class)) {
             throw new \LogicException('The "twig" extension is not configurable. Are you sure to use the TwigBundle? Try "composer require symfony/twig-bundle".');
         }
+        if (!method_exists(TwigBundle::class, 'getExtensionConfigurator')) {
+            throw new \LogicException('The "twig" extension is not configurable using fluent methods. Try upgrading "composer update symfony/twig-bundle".');
+        }
 
-        return new TwigExtensionConfigurator($this);
+        return TwigBundle::getExtensionConfigurator($this);
     }
 }

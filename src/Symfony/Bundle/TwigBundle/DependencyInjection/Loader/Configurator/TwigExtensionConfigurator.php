@@ -28,6 +28,11 @@ class TwigExtensionConfigurator extends AbstractExtensionConfigurator
         parent::__destruct();
     }
 
+    final public function exceptionController(string $controller)
+    {
+        return self::set('exception_controller', $controller);
+    }
+
     final public function defaultPath(array $path)
     {
         return self::set('default_path', $path);
