@@ -18,6 +18,8 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\Loader\Configurator\Securi
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Bundle\TwigBundle\DependencyInjection\Loader\Configurator\TwigExtensionConfigurator;
 use Symfony\Bundle\TwigBundle\TwigBundle;
+use Symfony\Bundle\WebProfilerBundle\DependencyInjection\Loader\Configurator\WebProfilerExtensionConfigurator;
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -214,5 +216,17 @@ class KernelContainerConfigurator extends ContainerConfigurator
         }
 
         return TwigBundle::getExtensionConfigurator($this);
+    }
+
+    final public function webProfiler(): WebProfilerExtensionConfigurator
+    {
+        if (!class_exists(WebProfilerBundle::class)) {
+            throw new \LogicException('The "web_profiler" extension is not configurable. Are you sure to use the WebProfilerBundle? Try "composer require symfony/web-profiler-bundle".');
+        }
+        if (!method_exists(TwigBundle::class, 'getExtensionConfigurator')) {
+            throw new \LogicException('The "web_profiler" extension is not configurable using fluent methods. Try upgrading "composer update symfony/web-profiler-bundle".');
+        }
+
+        return WebProfilerBundle::getExtensionConfigurator($this);
     }
 }

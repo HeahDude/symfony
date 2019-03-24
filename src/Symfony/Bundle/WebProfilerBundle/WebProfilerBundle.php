@@ -11,6 +11,8 @@
 
 namespace Symfony\Bundle\WebProfilerBundle;
 
+use Symfony\Bundle\WebProfilerBundle\DependencyInjection\Loader\Configurator\WebProfilerExtensionConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -23,5 +25,10 @@ class WebProfilerBundle extends Bundle
         if ('prod' === $this->container->getParameter('kernel.environment')) {
             @trigger_error('Using WebProfilerBundle in production is not supported and puts your project at risk, disable it.', E_USER_WARNING);
         }
+    }
+
+    public static function getExtensionConfigurator(ContainerConfigurator $containerConfigurator)
+    {
+        return new WebProfilerExtensionConfigurator($containerConfigurator);
     }
 }
