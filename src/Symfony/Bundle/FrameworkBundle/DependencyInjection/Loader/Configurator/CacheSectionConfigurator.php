@@ -80,7 +80,7 @@ final class CacheSectionConfigurator extends AbstractExtensionSectionConfigurato
         return $this->set('default_pdo_provider', $name);
     }
 
-    public function pool(string $name)
+    public function pool(string $name): PoolSectionConfigurator
     {
         return new PoolSectionConfigurator($this, $this->pools, $name);
     }
@@ -137,7 +137,7 @@ final class PoolSectionConfigurator extends AbstractExtensionSectionConfigurator
     /**
      * Allow chaining.
      */
-    public function pool(string $name): self
+    public function pool(string $name): CacheSectionConfigurator
     {
         return $this->extension->pool($name);
     }
