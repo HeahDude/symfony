@@ -13,6 +13,7 @@ namespace Symfony\Component\Form\Tests;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\Extension\Core\DataMapper\PropertyPathMapper;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationRequestHandler;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
@@ -22,6 +23,7 @@ use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\SubmitButtonBuilder;
 use Symfony\Component\Form\Tests\Fixtures\FixedDataTransformer;
+use Symfony\Component\Form\Tests\Fixtures\UninitializedObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 

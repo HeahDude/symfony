@@ -13,6 +13,7 @@ namespace Symfony\Component\Form\Extension\Core\DataMapper;
 
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
+use Symfony\Component\PropertyAccess\Exception\UninitializedPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -24,10 +25,12 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class PropertyPathMapper implements DataMapperInterface
 {
     private $propertyAccessor;
+    private $ignoreUninitializedProperties;
 
-    public function __construct(PropertyAccessorInterface $propertyAccessor = null)
+    public function __construct(PropertyAccessorInterface $propertyAccessor = null, bool $ignoreUninitializedProperties = false)
     {
         $this->propertyAccessor = $propertyAccessor ?: PropertyAccess::createPropertyAccessor();
+        $this->ignoreUninitializedProperties = $ignoreUninitializedProperties;
     }
 
     /**
@@ -45,10 +48,18 @@ class PropertyPathMapper implements DataMapperInterface
             $propertyPath = $form->getPropertyPath();
             $config = $form->getConfig();
 
-            if (!$empty && null !== $propertyPath && $config->getMapped()) {
-                $form->setData($this->propertyAccessor->getValue($data, $propertyPath));
-            } else {
-                $form->setData($config->getData());
+            try {
+                if (!$empty && null !== $propertyPath && $config->getMapped()) {
+                    $form->setData($this->propertyAccessor->getValue($data, $propertyPath));
+                } else {
+                    $form->setData($config->getData());
+                }
+            } catch (UninitializedPropertyException $e) {
+                if ($this->ignoreUninitializedProperties) {
+                    continue;
+                }
+
+                throw $e;
             }
         }
     }
@@ -70,21 +81,29 @@ class PropertyPathMapper implements DataMapperInterface
             $propertyPath = $form->getPropertyPath();
             $config = $form->getConfig();
 
-            // Write-back is disabled if the form is not synchronized (transformation failed),
-            // if the form was not submitted and if the form is disabled (modification not allowed)
-            if (null !== $propertyPath && $config->getMapped() && $form->isSubmitted() && $form->isSynchronized() && !$form->isDisabled()) {
-                $propertyValue = $form->getData();
-                // If the field is of type DateTimeInterface and the data is the same skip the update to
-                // keep the original object hash
-                if ($propertyValue instanceof \DateTimeInterface && $propertyValue == $this->propertyAccessor->getValue($data, $propertyPath)) {
+            try {
+                // Write-back is disabled if the form is not synchronized (transformation failed),
+                // if the form was not submitted and if the form is disabled (modification not allowed)
+                if (null !== $propertyPath && $config->getMapped() && $form->isSubmitted() && $form->isSynchronized() && !$form->isDisabled()) {
+                    $propertyValue = $form->getData();
+                    // If the field is of type DateTimeInterface and the data is the same skip the update to
+                    // keep the original object hash
+                    if ($propertyValue instanceof \DateTimeInterface && $propertyValue == $this->propertyAccessor->getValue($data, $propertyPath)) {
+                        continue;
+                    }
+
+                    // If the data is identical to the value in $data, we are
+                    // dealing with a reference
+                    if (!\is_object($data) || !$config->getByReference() || $propertyValue !== $this->propertyAccessor->getValue($data, $propertyPath)) {
+                        $this->propertyAccessor->setValue($data, $propertyPath, $propertyValue);
+                    }
+                }
+            } catch (UninitializedPropertyException $e) {
+                if ($this->ignoreUninitializedProperties) {
                     continue;
                 }
 
-                // If the data is identical to the value in $data, we are
-                // dealing with a reference
-                if (!\is_object($data) || !$config->getByReference() || $propertyValue !== $this->propertyAccessor->getValue($data, $propertyPath)) {
-                    $this->propertyAccessor->setValue($data, $propertyPath, $propertyValue);
-                }
+                throw $e;
             }
         }
     }

@@ -26,10 +26,12 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class FormType extends BaseType
 {
     private $propertyAccessor;
+    private $ignoreUninitializedProperties;
 
-    public function __construct(PropertyAccessorInterface $propertyAccessor = null)
+    public function __construct(PropertyAccessorInterface $propertyAccessor = null, bool $ignoreUninitializedProperties = false)
     {
         $this->propertyAccessor = $propertyAccessor ?: PropertyAccess::createPropertyAccessor();
+        $this->ignoreUninitializedProperties = $ignoreUninitializedProperties;
     }
 
     /**
@@ -52,7 +54,7 @@ class FormType extends BaseType
             ->setCompound($options['compound'])
             ->setData($isDataOptionSet ? $options['data'] : null)
             ->setDataLocked($isDataOptionSet)
-            ->setDataMapper($options['compound'] ? new PropertyPathMapper($this->propertyAccessor) : null)
+            ->setDataMapper($options['compound'] ? new PropertyPathMapper($this->propertyAccessor, $this->ignoreUninitializedProperties) : null)
             ->setMethod($options['method'])
             ->setAction($options['action']);
 

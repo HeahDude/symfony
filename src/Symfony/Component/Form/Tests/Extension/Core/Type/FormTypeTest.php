@@ -14,6 +14,7 @@ namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Extension\Core\DataMapper\PropertyPathMapper;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -22,6 +23,8 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\Tests\Fixtures\Author;
 use Symfony\Component\Form\Tests\Fixtures\FixedDataTransformer;
+use Symfony\Component\Form\Tests\Fixtures\UninitializedObject;
+use Symfony\Component\PropertyAccess\Exception\UninitializedPropertyException;
 use Symfony\Component\PropertyAccess\PropertyPath;
 use Symfony\Component\Validator\Validation;
 
@@ -174,6 +177,36 @@ class FormTypeTest extends BaseTypeTest
         $this->factory->createBuilder(static::TESTED_TYPE, null, [
             'data_class' => 'foobar',
         ]);
+    }
+
+    public function testDataClassWithUninitializedProperties()
+    {
+        $form = $this->factory->createBuilder(static::TESTED_TYPE, new UninitializedObject(), [
+            'data_class' => UninitializedObject::class,
+        ])->getForm();
+
+        $this->expectException(UninitializedPropertyException::class);
+
+        $form->add('name', TextType::class, [
+            'empty_data' => '',
+        ]);
+    }
+
+    public function testDataClassIgnoringUninitializedProperties()
+    {
+        $form = $this->factory->createBuilder(static::TESTED_TYPE, new UninitializedObject(), [
+            'data_class' => UninitializedObject::class,
+        ])
+            ->setDataMapper(new PropertyPathMapper(null, true))
+            ->getForm();
+
+        $form->add('name', TextType::class, [
+            'empty_data' => '',
+        ]);
+
+        $form->submit([]);
+
+        $this->assertSame('', $form->get('name')->getData());
     }
 
     public function testSubmitNullUsesDefaultEmptyData($emptyData = [], $expectedData = [])
