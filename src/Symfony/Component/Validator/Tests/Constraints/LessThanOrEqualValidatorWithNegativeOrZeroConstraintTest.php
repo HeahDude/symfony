@@ -39,6 +39,14 @@ class LessThanOrEqualValidatorWithNegativeOrZeroConstraintTest extends LessThanO
         ];
     }
 
+    public function provideValidComparisonsToPropertyPath(): array
+    {
+        return [
+            [0],
+            [-1]
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

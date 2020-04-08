@@ -48,12 +48,12 @@ abstract class AbstractComparisonValidator extends ConstraintValidator
         }
 
         if ($path = $constraint->propertyPath) {
-            if (null === $object = $this->context->getObject()) {
+            if ((null === $node = $this->context->getObject()) && !\is_array($node = $this->context->getRoot())) {
                 return;
             }
 
             try {
-                $comparedValue = $this->getPropertyAccessor()->getValue($object, $path);
+                $comparedValue = $this->getPropertyAccessor()->getValue($node, $path);
             } catch (NoSuchPropertyException $e) {
                 throw new ConstraintDefinitionException(sprintf('Invalid property path "%s" provided to "%s" constraint: %s.', $path, get_debug_type($constraint), $e->getMessage()), 0, $e);
             }

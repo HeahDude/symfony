@@ -38,6 +38,13 @@ class LessThanValidatorWithNegativeConstraintTest extends LessThanValidatorTest
         ];
     }
 
+    public function provideValidComparisonsToPropertyPath(): array
+    {
+        return [
+            [-1]
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

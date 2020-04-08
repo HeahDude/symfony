@@ -141,6 +141,22 @@ abstract class AbstractComparisonValidatorTestCase extends ConstraintValidatorTe
         $this->assertNoViolation();
     }
 
+    /**
+     * @dataProvider provideValidComparisonsToPropertyPath
+     */
+    public function testValidArrayComparisonToPropertyPath($comparedValue)
+    {
+        $constraint = $this->createConstraint(['propertyPath' => '[value]']);
+
+        $array = ['value' => 5];
+
+        $this->setRoot($array);
+
+        $this->validator->validate($comparedValue, $constraint);
+
+        $this->assertNoViolation();
+    }
+
     public function testNoViolationOnNullObjectWithPropertyPath()
     {
         $constraint = $this->createConstraint(['propertyPath' => 'propertyPath']);
