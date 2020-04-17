@@ -49,7 +49,8 @@ class ResizeFormListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            FormEvents::PRE_SET_DATA => 'preSetData',
+            // Listen early so other listeners can use the resized tree
+            FormEvents::POST_SET_DATA => ['preSetData', 1024],
             FormEvents::PRE_SUBMIT => 'preSubmit',
             // (MergeCollectionListener, MergeDoctrineCollectionListener)
             FormEvents::SUBMIT => ['onSubmit', 50],
@@ -59,7 +60,8 @@ class ResizeFormListener implements EventSubscriberInterface
     public function preSetData(FormEvent $event)
     {
         $form = $event->getForm();
-        $data = $event->getData();
+        // use the transformed data
+        $data = $form->getViewData();
 
         if (null === $data) {
             $data = [];

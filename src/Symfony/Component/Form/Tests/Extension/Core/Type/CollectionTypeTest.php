@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Tests\Fixtures\Author;
 use Symfony\Component\Form\Tests\Fixtures\AuthorType;
 
@@ -37,9 +38,9 @@ class CollectionTypeTest extends BaseTypeTest
         ]);
         $form->setData(['foo@foo.com', 'foo@bar.com']);
 
+        $this->assertCount(2, $form);
         $this->assertInstanceOf('Symfony\Component\Form\Form', $form[0]);
         $this->assertInstanceOf('Symfony\Component\Form\Form', $form[1]);
-        $this->assertCount(2, $form);
         $this->assertEquals('foo@foo.com', $form[0]->getData());
         $this->assertEquals('foo@bar.com', $form[1]->getData());
         $formAttrs0 = $form[0]->getConfig()->getOption('attr');
@@ -54,6 +55,46 @@ class CollectionTypeTest extends BaseTypeTest
         $this->assertEquals('foo@baz.com', $form[0]->getData());
         $formAttrs0 = $form[0]->getConfig()->getOption('attr');
         $this->assertEquals(20, $formAttrs0['maxlength']);
+    }
+
+    public function testSetDataResizeTransformedData()
+    {
+        $modelData = [
+            'numbers' => [1, 2, 3],
+            'letters' => ['a', 'b', 'c'],
+        ];
+
+        $form = $this->factory->createBuilder(static::TESTED_TYPE, null, [
+            'entry_type' => TextTypeTest::TESTED_TYPE,
+        ])
+            ->addModelTransformer(new CallbackTransformer(
+                static function ($model) {
+                    return $model ? array_combine($model['numbers'], $model['letters']) : [];
+                },
+                static function ($values) {
+                    return ['numbers' => array_keys($values), 'letters' => array_values($values)];
+                }
+            ))
+            ->getForm()
+        ;
+        $form->setData($modelData);
+
+        $this->assertCount(3, $form);
+        $this->assertInstanceOf('Symfony\Component\Form\Form', $form[1]);
+        $this->assertInstanceOf('Symfony\Component\Form\Form', $form[2]);
+        $this->assertInstanceOf('Symfony\Component\Form\Form', $form[3]);
+        $this->assertSame('a', $form[1]->getData());
+        $this->assertSame('b', $form[2]->getData());
+        $this->assertSame('c', $form[3]->getData());
+
+        $submittedData = [1 => 'b', 2 => 'c', 3 => 'a'];
+
+        $form->submit($submittedData);
+
+        $this->assertSame([
+            'numbers' => [1, 2, 3],
+            'letters' => ['b', 'c', 'a'],
+        ], $form->getData());
     }
 
     public function testThrowsExceptionIfObjectIsNotTraversable()
