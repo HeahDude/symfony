@@ -10,6 +10,7 @@ CHANGELOG
  * Add `Profiler::isEnabled()` so collaborating collector services may elect to omit themselves.
  * Add the `UidValueResolver` argument value resolver
  * Add `AbstractBundle` class for DI configuration/definition on a single file
+ * Add a third optional argument `$trace` to `Kernel::__construct()` to allow profiling build
 
 6.0
 ---

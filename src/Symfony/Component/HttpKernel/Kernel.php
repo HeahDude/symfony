@@ -41,6 +41,7 @@ use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\AddAnnotatedClassesToCachePass;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 // Help opcache.preload discover always-needed symbols
 class_exists(ConfigCache::class);
@@ -72,6 +73,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     private ?string $warmupDir = null;
     private int $requestStackSize = 0;
     private bool $resetServices = false;
+    private ?Stopwatch $stopwatch = null;
 
     /**
      * @var array<string, bool>
@@ -88,13 +90,21 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     public const END_OF_MAINTENANCE = '01/2023';
     public const END_OF_LIFE = '01/2023';
 
-    public function __construct(string $environment, bool $debug)
+    public function __construct(string $environment, bool $debug, private bool $trace = false)
     {
         if (!$this->environment = $environment) {
             throw new \InvalidArgumentException(sprintf('Invalid environment provided to "%s": the environment cannot be empty.', get_debug_type($this)));
         }
 
         $this->debug = $debug;
+
+        if ($trace) {
+            if (!\class_exists(Stopwatch::class)) {
+                throw new \InvalidArgumentException('Setting the argument "$trace" to true requires the Symfony Stopwatch component. Try running "composer require symfony/stopwatch".');
+            }
+
+            $this->stopwatch = new Stopwatch(true);
+        }
     }
 
     public function __clone()
@@ -103,6 +113,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
         $this->container = null;
         $this->requestStackSize = 0;
         $this->resetServices = false;
+        $this->stopwatch = $this->stopwatch ? new Stopwatch(morePrecision: true) : null;
     }
 
     /**
@@ -128,11 +139,14 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             $this->preBoot();
         }
 
+        $e = $this->stopwatch?->start('boot.bundles', 'kernel');
+
         foreach ($this->getBundles() as $bundle) {
             $bundle->setContainer($this->container);
             $bundle->boot();
         }
 
+        $e?->stop();
         $this->booted = true;
     }
 
@@ -156,7 +170,9 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
         }
 
         if ($this->getHttpKernel() instanceof TerminableInterface) {
+            $e = $this->stopwatch?->start('terminate', 'kernel');
             $this->getHttpKernel()->terminate($request, $response);
+            $e?->stop();
         }
     }
 
@@ -186,6 +202,11 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
      */
     public function handle(Request $request, int $type = HttpKernelInterface::MAIN_REQUEST, bool $catch = true): Response
     {
+        if ($this->stopwatch) {
+            $request->attributes->set('_stopwatch_root_trace', true);
+            $this->stopwatch->openSection();
+        }
+
         if (!$this->booted) {
             $container = $this->container ?? $this->preBoot();
 
@@ -202,6 +223,16 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             return $this->getHttpKernel()->handle($request, $type, $catch);
         } finally {
             --$this->requestStackSize;
+
+            if ($this->stopwatch) {
+                try {
+                    // in case the profiler listener is off
+                    $this->stopwatch->stopSection('_request');
+                } catch (\LogicException) {
+                    // noop
+                }
+            }
+            // todo echo or allow Kernel::getTraces()
         }
     }
 
@@ -449,6 +480,10 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
                 $this->container->set('kernel', $this);
                 error_reporting($errorLevel);
 
+                if ($this->debug && \class_exists(Stopwatch::class)) {
+                    $this->container->set('debug.stopwatch', $this->stopwatch ?? new Stopwatch(true));
+                }
+
                 return;
             }
         } catch (\Throwable $e) {
@@ -471,6 +506,10 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
                     flock($lock, \LOCK_UN);
                     fclose($lock);
                     $this->container->set('kernel', $this);
+
+                    if ($this->debug && \class_exists(Stopwatch::class)) {
+                        $this->container->set('debug.stopwatch', $this->stopwatch ?? new Stopwatch(true));
+                    }
 
                     return;
                 }
@@ -536,8 +575,22 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
 
         try {
             $container = null;
+            if ($this->trace) {
+                $e = $this->stopwatch->start('build', 'container');
+            }
+
             $container = $this->buildContainer();
+
+            if ($this->trace) {
+                $e?->stop();
+                $e = $this->stopwatch->start('compile', 'container');
+            }
+
             $container->compile();
+
+            if ($this->trace) {
+                $e->stop();
+            }
         } finally {
             if ($collectDeprecations) {
                 restore_error_handler();
@@ -547,7 +600,15 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             }
         }
 
+        if ($this->trace) {
+            $e = $this->stopwatch->start('dump', 'container');
+        }
+
         $this->dumpContainer($cache, $container, $class, $this->getContainerBaseClass());
+
+        if ($this->trace) {
+            $e->lap();
+        }
 
         if ($lock) {
             flock($lock, \LOCK_UN);
@@ -556,6 +617,10 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
 
         $this->container = require $cachePath;
         $this->container->set('kernel', $this);
+
+        if ($this->debug && \class_exists(Stopwatch::class)) {
+            $this->container->set('debug.stopwatch', $this->stopwatch ?? new Stopwatch(true));
+        }
 
         if ($oldContainer && \get_class($this->container) !== $oldContainer->name) {
             // Because concurrent requests might still be using them,
@@ -581,6 +646,10 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
 
         if ($preload && method_exists(Preloader::class, 'append') && file_exists($preloadFile = $buildDir.'/'.$class.'.preload.php')) {
             Preloader::append($preloadFile, $preload);
+        }
+
+        if ($this->trace) {
+            $e->stop();
         }
     }
 
@@ -765,7 +834,17 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             $_SERVER['SHELL_VERBOSITY'] = 3;
         }
 
+        if ($this->trace) {
+            $e = $this->stopwatch->start('init.bundles', 'kernel');
+        }
+
         $this->initializeBundles();
+
+        if ($this->trace) {
+            $e?->stop();
+            $e = $this->stopwatch->start('init.container', 'kernel');
+        }
+
         $this->initializeContainer();
 
         $container = $this->container;
@@ -776,6 +855,10 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
 
         if ($container->hasParameter('kernel.trusted_proxies') && $container->hasParameter('kernel.trusted_headers') && $trustedProxies = $container->getParameter('kernel.trusted_proxies')) {
             Request::setTrustedProxies(\is_array($trustedProxies) ? $trustedProxies : array_map('trim', explode(',', $trustedProxies)), $container->getParameter('kernel.trusted_headers'));
+        }
+
+        if ($this->trace) {
+            $e->stop();
         }
 
         return $container;

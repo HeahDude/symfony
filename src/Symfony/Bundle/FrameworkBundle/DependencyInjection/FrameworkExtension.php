@@ -1027,7 +1027,7 @@ class FrameworkExtension extends Extension
 
         if (class_exists(Stopwatch::class)) {
             $container->register('debug.stopwatch', Stopwatch::class)
-                ->addArgument(true)
+                ->setSynthetic(true)
                 ->addTag('kernel.reset', ['method' => 'reset']);
             $container->setAlias(Stopwatch::class, new Alias('debug.stopwatch', false));
         }

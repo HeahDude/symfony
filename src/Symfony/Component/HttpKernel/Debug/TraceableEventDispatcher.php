@@ -30,8 +30,12 @@ class TraceableEventDispatcher extends BaseTraceableEventDispatcher
     {
         switch ($eventName) {
             case KernelEvents::REQUEST:
-                $event->getRequest()->attributes->set('_stopwatch_token', substr(hash('sha256', uniqid(mt_rand(), true)), 0, 6));
-                $this->stopwatch->openSection();
+                $request = $event->getRequest();
+                $request->attributes->set('_stopwatch_token', substr(hash('sha256', uniqid(mt_rand(), true)), 0, 6));
+
+                if (null === $request->attributes->get('_stopwatch_root_trace')) {
+                    $this->stopwatch->openSection();
+                }
                 break;
             case KernelEvents::VIEW:
             case KernelEvents::RESPONSE:
