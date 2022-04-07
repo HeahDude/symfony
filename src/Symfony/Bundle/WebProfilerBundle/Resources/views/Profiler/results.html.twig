@@ -19,9 +19,13 @@
 {% block panel %}
     <h2>{{ tokens ? tokens|length : 'No' }} results found</h2>
 
-    {% if tokens %}
-        <table id="search-results">
+    {% set requests = tokens|filter(r => 'CLI' != r.method) %}
+    {% if requests %}
+        <table class="search-results">
             <thead>
+                <tr>
+                    <th scope="row">Requests</th>
+                </tr>
                 <tr>
                     <th scope="col" class="text-center">Status</th>
                     <th scope="col">IP</th>
@@ -32,7 +36,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for result in tokens %}
+                {% for result in requests %}
                     {% set css_class = result.status_code|default(0) > 399 ? 'status-error' : result.status_code|default(0) > 299 ? 'status-warning' : 'status-success' %}
 
                     <tr>
@@ -60,7 +64,48 @@
         </table>
     {% else %}
         <div class="empty">
-            <p>The query returned no result.</p>
+            <p>The query returned no requests.</p>
+        </div>
+    {% endif %}
+
+    {% set commands = tokens|filter(r => 'CLI' == r.method) %}
+    {% if commands %}
+        <table class="search-results">
+            <thead>
+                <tr>
+                    <th scope="row">Commands</th>
+                </tr>
+                <tr>
+                    <th scope="col" class="text-center" style="width: 120px;">Status</th>
+                    <th scope="col">Command</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Token</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in commands %}
+                    {% set css_class = 500 == result.status_code ? 'status-error' : 'status-success' %}
+
+                    <tr>
+                        <td class="text-center">
+                            <span class="label {{ css_class }}">{{ 200 == result.status_code ? 'Success' : 'Failure' }}</span>
+                        </td>
+                        <td class="break-long-words">
+                            {{ result.url }}
+                            {{ helper.profile_search_filter(request, result, 'url') }}
+                        </td>
+                        <td class="text-small">
+                            <span class="nowrap">{{ result.time|date('d-M-Y') }}</span>
+                            <span class="nowrap newline">{{ result.time|date('H:i:s') }}</span>
+                        </td>
+                        <td class="nowrap"><a href="{{ path('_profiler', { token: result.token }) }}">{{ result.token }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">
+            <p>The query returned no commands.</p>
         </div>
     {% endif %}
 

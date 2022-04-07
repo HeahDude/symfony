@@ -45,9 +45,11 @@
                     </div>
                 </div>
 
-                {% if templates is defined %}
+                {% if templates is defined and profile is defined %}
+                    {% set request = profile.collectors.request %}
                     <ul id="menu-profiler">
-                        {% for name, template in templates %}
+                        {# exclude request and router if command, and exclude command if not one #}
+                        {% for name, template in templates|filter(t => not (t matches '~/(request|router)\.~' and request.isCommand) and not (t matches '~/command\.~' and not request.isCommand)) %}
                             {% set menu -%}
                                 {%- if block('menu', template) is defined -%}
                                     {% with { collector: profile.getcollector(name), profiler_markup_version: profiler_markup_version } %}

@@ -45,7 +45,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function find(?string $ip, ?string $url, ?int $limit, ?string $method, int $start = null, int $end = null, string $statusCode = null): array
+    public function find(?string $ip, ?string $url, ?int $limit, ?string $method, int $start = null, int $end = null, string $statusCode = null, string $excludeMethod = null): array
     {
         $file = $this->getIndexFilename();
 
@@ -71,6 +71,10 @@ class FileProfilerStorage implements ProfilerStorageInterface
             }
 
             if (!empty($end) && $csvTime > $end) {
+                continue;
+            }
+
+            if ($csvMethod === $excludeMethod) {
                 continue;
             }
 

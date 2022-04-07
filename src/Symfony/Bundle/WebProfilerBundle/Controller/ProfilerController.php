@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\AutoExpireFlashBag;
 use Symfony\Component\HttpKernel\DataCollector\DumpDataCollector;
 use Symfony\Component\HttpKernel\DataCollector\ExceptionDataCollector;
+use Symfony\Component\HttpKernel\DataCollector\RequestDataCollector;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -76,7 +77,7 @@ class ProfilerController
         $panel = $request->query->get('panel');
         $page = $request->query->get('page', 'home');
 
-        if ('latest' === $token && $latest = current($this->profiler->find(null, null, 1, null, null, null))) {
+        if ('latest' === $token && $latest = current($this->profiler->find(null, null, 1, null, null, null, null, null))) {
             $token = $latest['token'];
         }
 
@@ -92,6 +93,10 @@ class ProfilerController
                     $panel = $collector->getName();
 
                     break;
+                }
+
+                if ($collector instanceof RequestDataCollector && $collector->isCommand()) {
+                    $panel = 'command';
                 }
 
                 if ($collector instanceof DumpDataCollector && $collector->getDumpsCount() > 0) {
@@ -173,10 +178,13 @@ class ProfilerController
         $this->cspHandler?->disableCsp();
 
         if (!$request->hasSession()) {
+            $type =
             $ip =
             $method =
             $statusCode =
             $url =
+            $exitStatus =
+            $commandName =
             $start =
             $end =
             $limit =
@@ -184,10 +192,13 @@ class ProfilerController
         } else {
             $session = $request->getSession();
 
+            $type = $request->query->get('profile_type', $session->get('_profiler_search_profile_type'));
             $ip = $request->query->get('ip', $session->get('_profiler_search_ip'));
             $method = $request->query->get('method', $session->get('_profiler_search_method'));
             $statusCode = $request->query->get('status_code', $session->get('_profiler_search_status_code'));
             $url = $request->query->get('url', $session->get('_profiler_search_url'));
+            $exitStatus = $request->query->get('url', $session->get('_profiler_search_exit_status'));
+            $commandName = $request->query->get('url', $session->get('_profiler_search_command_name'));
             $start = $request->query->get('start', $session->get('_profiler_search_start'));
             $end = $request->query->get('end', $session->get('_profiler_search_end'));
             $limit = $request->query->get('limit', $session->get('_profiler_search_limit'));
@@ -197,9 +208,12 @@ class ProfilerController
         return new Response(
             $this->twig->render('@WebProfiler/Profiler/search.html.twig', [
                 'token' => $token,
+                'type' => $type,
                 'ip' => $ip,
                 'method' => $method,
                 'status_code' => $statusCode,
+                'exit_status' => $exitStatus,
+                'command_name' => $commandName,
                 'url' => $url,
                 'start' => $start,
                 'end' => $end,
@@ -224,23 +238,61 @@ class ProfilerController
 
         $profile = $this->profiler->loadProfile($token);
 
+        $type = $request->query->get('profile_type');
         $ip = $request->query->get('ip');
         $method = $request->query->get('method');
         $statusCode = $request->query->get('status_code');
         $url = $request->query->get('url');
+        $exitStatus = $request->query->get('exit_status');
+        $commandName = $request->query->get('command_name');
         $start = $request->query->get('start', null);
         $end = $request->query->get('end', null);
         $limit = $request->query->get('limit');
+        $excludeMethod = null;
+        $searchMethod = null;
+        $searchUrl = null;
+
+        if ('Request' === $type) {
+            $excludeMethod = 'CLI';
+        } elseif ('Command' === $type) {
+            $searchMethod = 'CLI';
+            $method = null;
+        }
+        if (null !== $ip || null !== $url || null !== $statusCode || (null !== $method && 'CLI' !== $method)) {
+            $type = 'Request';
+            $excludeMethod = 'CLI';
+            $exitStatus = null;
+            $commandName = null;
+        }
+        if (null !== $exitStatus) {
+            $exitStatus = 'Success' === $exitStatus ? 200 : 500;
+            $statusCode = null;
+            $type = 'Command';
+            $searchMethod = 'CLI';
+            $method = null;
+            $excludeMethod = null;
+        }
+        if (null !== $commandName) {
+            $url = null;
+            $searchUrl = $commandName;
+            $type = 'Command';
+            $searchMethod = 'CLI';
+            $method = null;
+            $excludeMethod = null;
+        }
 
         return $this->renderWithCspNonces($request, '@WebProfiler/Profiler/results.html.twig', [
             'request' => $request,
             'token' => $token,
             'profile' => $profile,
-            'tokens' => $this->profiler->find($ip, $url, $limit, $method, $start, $end, $statusCode),
+            'tokens' => $this->profiler->find($ip, $url ?? $searchUrl, $limit, $method ?? $searchMethod, $start, $end, $statusCode ?? $exitStatus, $excludeMethod),
+            'type' => $type,
             'ip' => $ip,
             'method' => $method,
             'status_code' => $statusCode,
             'url' => $url,
+            'exit_status' => $exitStatus,
+            'command_name' => $commandName,
             'start' => $start,
             'end' => $end,
             'limit' => $limit,
@@ -257,10 +309,13 @@ class ProfilerController
     {
         $this->denyAccessIfProfilerDisabled();
 
+        $type = $request->query->get('profile_type');
         $ip = $request->query->get('ip');
         $method = $request->query->get('method');
         $statusCode = $request->query->get('status_code');
         $url = $request->query->get('url');
+        $exitStatus = $request->query->get('exit_status');
+        $commandName = $request->query->get('command_name');
         $start = $request->query->get('start', null);
         $end = $request->query->get('end', null);
         $limit = $request->query->get('limit');
@@ -269,10 +324,13 @@ class ProfilerController
         if ($request->hasSession()) {
             $session = $request->getSession();
 
+            $session->set('_profiler_search_profile_type', $type);
             $session->set('_profiler_search_ip', $ip);
             $session->set('_profiler_search_method', $method);
             $session->set('_profiler_search_status_code', $statusCode);
             $session->set('_profiler_search_url', $url);
+            $session->set('_profiler_search_exit_status', $exitStatus);
+            $session->set('_profiler_search_command_name', $commandName);
             $session->set('_profiler_search_start', $start);
             $session->set('_profiler_search_end', $end);
             $session->set('_profiler_search_limit', $limit);
@@ -287,10 +345,13 @@ class ProfilerController
 
         return new RedirectResponse($this->generator->generate('_profiler_search_results', [
             'token' => $tokens ? $tokens[0]['token'] : 'empty',
+            'profile_type' => $type,
             'ip' => $ip,
             'method' => $method,
             'status_code' => $statusCode,
             'url' => $url,
+            'exit_status' => $exitStatus,
+            'command_name' => $commandName,
             'start' => $start,
             'end' => $end,
             'limit' => $limit,

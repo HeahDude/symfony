@@ -1,9 +1,17 @@
 <div id="sidebar-search" class="hidden">
     <form action="{{ path('_profiler_search') }}" method="get">
         <div class="form-group">
-            <label for="ip">IP</label>
-            <input type="text" name="ip" id="ip" value="{{ ip }}">
+            <label for="profile_type">Type</label>
+            <select name="profile_type" id="profile_type">
+                <option value="">Any</option>
+                {% for t in ['Request', 'Command'] %}
+                    <option {{ t == type ? 'selected="selected"' }}>{{ t }}</option>
+                {% endfor %}
+            </select>
         </div>
+
+        <hr>
+        <p>Requests</p>
 
         <div class="form-group">
             <label for="method">Method</label>
@@ -24,6 +32,26 @@
             <label for="url">URL</label>
             <input type="text" name="url" id="url" value="{{ url }}">
         </div>
+
+        <hr>
+        <p>Commands</p>
+
+        <div class="form-group">
+            <label for="exit_status">Exit</label>
+            <select name="exit_status" id="exit_status">
+                <option value="">Any</option>
+                {% for s in ['Success', 'Failure'] %}
+                    <option {{ s == exit_status ? 'selected="selected"' }}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="command_name" id="command_name" value="{{ command_name }}">
+        </div>
+
+        <hr>
 
         <div class="form-group">
             <label for="token">Token</label>
