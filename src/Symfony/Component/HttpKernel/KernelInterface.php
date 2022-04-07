@@ -14,11 +14,14 @@ namespace Symfony\Component\HttpKernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * The Kernel is the heart of the Symfony system.
  *
  * It manages an environment made of application kernel and bundles.
+ *
+ * @method void setStopwatch(?Stopwatch $stopwatch)
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */

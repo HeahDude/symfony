@@ -820,6 +820,14 @@ class FrameworkExtension extends Extension
 
         $container->getDefinition('profiler_listener')
             ->addArgument($config['collect_parameter']);
+
+        if ($this->isConfigEnabled($container, $config['cli'])) {
+            $container->getDefinition('console_profiler_listener')
+                ->setArgument(4, $config['cli']['command_pattern'])
+            ;
+        } else {
+            $container->removeDefinition('console_profiler_listener');
+        }
     }
 
     private function registerWorkflowConfiguration(array $config, ContainerBuilder $container, PhpFileLoader $loader)

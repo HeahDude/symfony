@@ -7,6 +7,7 @@ CHANGELOG
  * Add method `__toString()` to `InputInterface`
  * Deprecate `Command::$defaultName` and `Command::$defaultDescription`, use the `AsCommand` attribute instead
  * Add suggested values for arguments and options in input definition, for input completion
+ * Add `TraceableCommand` to enable profiling commands
 
 6.0
 ---

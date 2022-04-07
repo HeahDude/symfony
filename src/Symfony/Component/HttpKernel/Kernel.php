@@ -402,6 +402,15 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setStopwatch(?Stopwatch $stopwatch, bool $trace)
+    {
+        $this->stopwatch = $stopwatch;
+        $this->trace = $trace;
+    }
+
+    /**
      * Initializes bundles.
      *
      * @throws \LogicException if two bundles share a common name
@@ -826,7 +835,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     private function preBoot(): ContainerInterface
     {
         if ($this->debug) {
-            $this->startTime = microtime(true);
+            $this->startTime = $_ENV['APP_START_TIME'] ?? microtime(true);
         }
         if ($this->debug && !isset($_ENV['SHELL_VERBOSITY']) && !isset($_SERVER['SHELL_VERBOSITY'])) {
             putenv('SHELL_VERBOSITY=3');

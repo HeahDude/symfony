@@ -9,6 +9,7 @@ CHANGELOG
  * Add `cache:pool:invalidate-tags` command
  * Add `xliff` support in addition to `xlf` for `XliffFileDumper`
  * Deprecate the `reset_on_message` config option. It can be set to `true` only and does nothing now
+ * Add support for profiling commands with `DebugApplication`, `CommandDataCollector`, `ConsoleProfilerListener` and `framework.profiler.cli` options
 
 6.0
 ---

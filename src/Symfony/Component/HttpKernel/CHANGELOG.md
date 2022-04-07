@@ -11,6 +11,8 @@ CHANGELOG
  * Add the `UidValueResolver` argument value resolver
  * Add `AbstractBundle` class for DI configuration/definition on a single file
  * Add a third optional argument `$trace` to `Kernel::__construct()` to allow profiling build
+ * Add `KernelInterface::setStopwatch()` enabling to set `$trace` on the fly
+ * Add support for profiling commands with `DebugRequestStack::get*Request(includeVirtual: true)`
 
 6.0
 ---

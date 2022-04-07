@@ -14,6 +14,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver;
 use Symfony\Component\HttpKernel\Controller\TraceableArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\TraceableControllerResolver;
+use Symfony\Component\HttpKernel\Debug\DebugRequestStack;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 
 return static function (ContainerConfigurator $container) {
@@ -46,5 +47,8 @@ return static function (ContainerConfigurator $container) {
         ->set('argument_resolver.not_tagged_controller', NotTaggedControllerValueResolver::class)
             ->args([abstract_arg('Controller argument, set in FrameworkExtension')])
             ->tag('controller.argument_value_resolver', ['priority' => -200])
+
+        ->set('debug.request_stack', DebugRequestStack::class)
+        ->alias('request_stack', 'debug.request_stack')->public()
     ;
 };

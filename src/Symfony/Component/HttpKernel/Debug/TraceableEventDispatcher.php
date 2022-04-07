@@ -11,8 +11,13 @@
 
 namespace Symfony\Component\HttpKernel\Debug;
 
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher as BaseTraceableEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Collects some data about event listeners.
@@ -23,6 +28,15 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class TraceableEventDispatcher extends BaseTraceableEventDispatcher
 {
+    private RequestStack|DebugRequestStack|null $requestStack;
+
+    public function __construct(EventDispatcherInterface $dispatcher, Stopwatch $stopwatch, LoggerInterface $logger = null, RequestStack|DebugRequestStack $requestStack = null)
+    {
+        parent::__construct($dispatcher, $stopwatch, $logger, $requestStack);
+
+        $this->requestStack = $requestStack;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -59,6 +73,15 @@ class TraceableEventDispatcher extends BaseTraceableEventDispatcher
                 } catch (\LogicException) {
                 }
                 break;
+            default:
+                if (\class_exists(ConsoleEvents::class) && ConsoleEvents::COMMAND === $eventName) {
+                    $request = $this->requestStack?->getCurrentRequest(true);
+
+                    if ($request && !$request->hasRootTrace()) {
+                        // command event is dispatched only once, even if sub commands are run
+                        $this->stopwatch->openSection();
+                    }
+                }
         }
     }
 

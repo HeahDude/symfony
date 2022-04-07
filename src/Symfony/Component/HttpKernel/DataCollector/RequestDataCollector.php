@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Debug\CliRequest;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -89,6 +90,15 @@ class RequestDataCollector extends DataCollector implements EventSubscriberInter
             if ('' !== $name && isset($_ENV[$name])) {
                 $dotenvVars[$name] = $_ENV[$name];
             }
+        }
+
+        if ($request instanceof CliRequest) {
+            $this->data = [
+                'command' => true,
+                'dotenv_vars' => $dotenvVars,
+            ];
+
+            return;
         }
 
         $this->data = [
@@ -365,6 +375,11 @@ class RequestDataCollector extends DataCollector implements EventSubscriberInter
     public function getForwardToken()
     {
         return $this->data['forward_token'] ?? null;
+    }
+
+    public function isCommand(): bool
+    {
+        return $this->data['command'] ?? false;
     }
 
     public function onKernelController(ControllerEvent $event)

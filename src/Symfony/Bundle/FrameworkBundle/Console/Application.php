@@ -163,7 +163,7 @@ class Application extends BaseApplication
 
         $this->commandsRegistered = true;
 
-        $this->kernel->boot();
+        $this->bootKernel();
 
         $container = $this->kernel->getContainer();
 
@@ -193,6 +193,11 @@ class Application extends BaseApplication
                 }
             }
         }
+    }
+
+    protected function bootKernel(): void
+    {
+        $this->kernel->boot();
     }
 
     private function renderRegistrationErrors(InputInterface $input, OutputInterface $output)

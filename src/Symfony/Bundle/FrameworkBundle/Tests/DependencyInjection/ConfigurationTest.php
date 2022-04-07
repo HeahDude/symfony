@@ -405,6 +405,10 @@ class ConfigurationTest extends TestCase
                 'dsn' => 'file:%kernel.cache_dir%/profiler',
                 'collect' => true,
                 'collect_parameter' => null,
+                'cli' => [
+                    'enabled' => false,
+                    'command_pattern' => '/^(?!(cache:clear|messenger:consume)).+/',
+                ],
             ],
             'translator' => [
                 'enabled' => !class_exists(FullStack::class),
